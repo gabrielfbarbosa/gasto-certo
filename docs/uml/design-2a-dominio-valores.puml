@@ -8,7 +8,8 @@ hide <<foco>> stereotype
 title GastoCerto — Design (vista 2a): valores, competência e consultas (domain.model)
 
 class Dinheiro <<value>> {
-  - centavos : Long
+  + centavos : Long
+  + {static} ESCALA_DA_COTACAO : Long = 10000
   + plus(outro : Dinheiro) : Dinheiro
   + minus(outro : Dinheiro) : Dinheiro
   + dividirEm(n : Int) : List<Dinheiro>
