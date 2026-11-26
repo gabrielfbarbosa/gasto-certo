@@ -1,0 +1,92 @@
+@startuml sequencia-uc02
+title UC02 – Registrar compra parcelada (diagrama de sequência)
+skinparam shadowing false
+skinparam defaultFontName Helvetica
+skinparam sequenceMessageAlign left
+skinparam responseMessageBelowArrow true
+skinparam ParticipantPadding 6
+skinparam BoxPadding 8
+autonumber
+
+actor "Usuário" as U
+box "ui" #F7F7F5
+  boundary "RegistrarGastoScreen" as Tela
+  participant "RegistrarGastoViewModel" as VM
+end box
+box "application" #EEF4FB
+  control "RegistrarCompraParcelada" as UC
+end box
+box "domain" #FFF8EC
+  participant "FabricaDeLancamentos" as Fab
+  participant "compra :\nCompraParcelada" as CP
+  participant "cartao :\nCartaoDeCredito" as Cartao
+  participant "politica :\nCompetenciaPorFechamentoDeFatura" as Pol
+  participant "valorTotal :\nDinheiro" as Din
+  participant "Parcela" as Par
+  participant "Competencia" as Comp
+end box
+box "domain.repositorio" #FFF8EC
+  participant "CompetenciaRepository" as CRepo
+  participant "LancamentoRepository" as LRepo
+end box
+
+== Prévia ==
+U -> Tela : informa cartão, valor total, nº de parcelas,\ndata da compra e descrição
+Tela -> VM : previaParcelas()
+VM -> UC : previa(dados : DadosDaCompra)
+UC -> Fab : compraParcelada(dados)
+alt valor <= 0
+  Fab --> UC : <<lança>> ValorInvalido [RN09]
+  UC --> VM : ValorInvalido
+  VM --> Tela : mensagem de erro (E1)
+else quantidade fora de 2..48
+  Fab --> UC : <<lança>> ParcelasForaDoLimite [RN02]
+  UC --> VM : ParcelasForaDoLimite
+  VM --> Tela : mensagem de erro (E2)
+else dados válidos
+  Fab -> CP ** : <<create>>(valorTotal, quantidade,\ndataCompra, cartao, terceiro?)
+  Fab --> UC : compra
+end
+UC -> CP : gerarParcelas()
+activate CP
+CP -> Cartao : politicaDeCompetencia()
+Cartao -> Pol ** : <<create>>(diaFechamento, diaVencimento)
+Cartao --> CP : politica
+CP -> Pol : competenciaDe(dataCompra)
+note right of Pol
+  até o fechamento: fatura que vence neste ciclo;
+  depois: a seguinte. Competência = mês do
+  vencimento  [RN01]
+end note
+Pol --> CP : mes1 : MesAno
+CP -> Din : dividirEm(quantidade)
+Din --> CP : valores : List<Dinheiro>\n(resto na 1ª parcela) [RN02]
+loop k = 1..N
+  CP -> Par ** : <<create>>(k, N, valores[k], mes1 + (k − 1), terceiro?)
+end
+CP --> UC : parcelas : List<Parcela>
+deactivate CP
+UC --> VM : parcelas
+VM --> Tela : estado com a prévia "k/N – valor – fatura"
+Tela --> U : mostra a prévia
+
+== Confirmação ==
+U -> Tela : confirma
+Tela -> VM : confirmar()
+VM -> UC : executar(dados)
+ref over UC, Par : repete os passos 4 a 22: validar, criar a compra e gerar as parcelas
+UC -> CRepo : buscarOuCriar(mes1)
+CRepo --> UC : competencia
+UC -> Comp : garantirAberta()
+alt competência fechada [RN08]
+  Comp --> UC : <<lança>> CompetenciaFechada
+  UC --> VM : CompetenciaFechada
+  VM --> Tela : erro + opção de reabrir o mês
+  Tela --> U : "Mês fechado. Reabrir ou cancelar?"
+else competência aberta
+  UC -> LRepo : salvarTodos(parcelas)
+  UC --> VM : compra
+  VM --> Tela : fatura atualizada
+  Tela --> U : compra registrada
+end
+@enduml

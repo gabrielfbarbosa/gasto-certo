@@ -1,0 +1,157 @@
+@startuml design-4-aplicacao
+title Controle de Gastos — Design (vista 4): casos de uso centrais, persistência e interface
+skinparam shadowing false
+skinparam defaultFontName Helvetica
+skinparam classAttributeIconSize 0
+skinparam linetype ortho
+skinparam nodesep 25
+skinparam ranksep 55
+skinparam class {
+  BackgroundColor #FFFFFF
+  BorderColor #444444
+}
+hide circle
+hide empty members
+
+package "ui" #F7F7F5 {
+  class RegistrarGastoScreen <<Composable>>
+  class FecharMesScreen <<Composable>>
+  class ResumoScreen <<Composable>>
+  class RegistrarGastoViewModel {
+    + estado : StateFlow<RegistrarGastoEstado>
+    + confirmar()
+    + previaParcelas()
+  }
+  class FecharMesViewModel {
+    + estado : StateFlow<FecharMesEstado>
+    + carregar(mes : MesAno)
+    + fechar()
+    + reabrir()
+  }
+  class ResumoViewModel {
+    + estado : StateFlow<ResumoEstado>
+    + selecionarPeriodo(p : Periodo)
+    + filtrarTitular(p : Pessoa?)
+  }
+}
+
+package "application" #EEF4FB {
+  class RegistrarGasto <<Controller>> {
+    + executar(dados : DadosDoGasto) : Gasto
+  }
+  class RegistrarCompraParcelada <<Controller>> {
+    + previa(dados : DadosDaCompra) : List<Parcela>
+    + executar(dados : DadosDaCompra) : CompraParcelada
+  }
+  class FecharMes <<Controller>> {
+    + executar(mes : MesAno) : Competencia
+    - semDuplicados(previstos, existentes) : List<Lancamento>
+  }
+  class ReabrirMes <<Controller>> {
+    + executar(mes : MesAno)
+  }
+  class ConsultarResumo <<Controller>> {
+    + doMes(mes : MesAno, titular : Pessoa?) : ResumoDoPeriodo
+    + daSemana(data : LocalDate) : ResumoDoPeriodo
+    + doAno(ano : Int) : ResumoDoPeriodo
+  }
+  class ConsultarFatura <<Controller>> {
+    + executar(cartao : CartaoDeCredito, mes : MesAno) : Fatura
+  }
+}
+
+package "domain.repositorio" #FFF8EC {
+  interface LancamentoRepository {
+    + salvar(l : Lancamento)
+    + salvarTodos(l : List<Lancamento>)
+    + excluir(l : Lancamento)
+    + doMes(mes : MesAno) : List<Lancamento>
+    + doPeriodo(inicio, fim) : List<Lancamento>
+    + deTerceiro(p : Pessoa) : List<Gasto>
+  }
+  interface CompetenciaRepository {
+    + buscarOuCriar(mes : MesAno) : Competencia
+    + salvar(c : Competencia)
+  }
+  interface CadastroRepository {
+    + meiosAtivos() : List<MeioDePagamento>
+  }
+  interface RecorrenciaRepository {
+    + contasFixasAtivas() : List<ContaFixa>
+    + receitasAtivas() : List<ReceitaRecorrente>
+    + investimentosComAporte() : List<ContaInvestimento>
+  }
+  interface Transacao {
+    + executar(bloco : () -> T) : T
+  }
+}
+
+package "domain.regra" #FFF8EC {
+  class FabricaDeLancamentos <<Factory>>
+}
+
+package "data (Room KMP)" #FFFFFF {
+  class AppDatabase <<RoomDatabase>>
+  class RoomLancamentoRepository
+  class RoomCompetenciaRepository
+  class RoomCadastroRepository
+  class RoomRecorrenciaRepository
+  class RoomReembolsoRepository
+  class RoomTransacao
+  class "DAOs + Entities + Mappers" as Daos
+}
+
+class "moduloApp (Koin)" as DI <<DI>>
+
+RegistrarGastoScreen --> RegistrarGastoViewModel
+FecharMesScreen --> FecharMesViewModel
+ResumoScreen --> ResumoViewModel
+RegistrarGastoViewModel --> RegistrarGasto
+RegistrarGastoViewModel --> RegistrarCompraParcelada
+FecharMesViewModel --> FecharMes
+FecharMesViewModel --> ReabrirMes
+FecharMesViewModel --> ConsultarResumo
+ResumoViewModel --> ConsultarResumo
+ResumoViewModel --> ConsultarFatura
+
+RegistrarGasto --> FabricaDeLancamentos
+RegistrarGasto --> CadastroRepository
+RegistrarGasto --> LancamentoRepository
+RegistrarGasto --> CompetenciaRepository
+RegistrarCompraParcelada --> FabricaDeLancamentos
+RegistrarCompraParcelada --> LancamentoRepository
+RegistrarCompraParcelada --> CompetenciaRepository
+FecharMes --> CompetenciaRepository
+FecharMes --> RecorrenciaRepository
+FecharMes --> LancamentoRepository
+FecharMes --> FabricaDeLancamentos
+FecharMes --> Transacao
+ReabrirMes --> CompetenciaRepository
+ConsultarResumo --> LancamentoRepository
+ConsultarFatura --> LancamentoRepository
+
+LancamentoRepository <|.. RoomLancamentoRepository
+CompetenciaRepository <|.. RoomCompetenciaRepository
+CadastroRepository <|.. RoomCadastroRepository
+RecorrenciaRepository <|.. RoomRecorrenciaRepository
+Transacao <|.. RoomTransacao
+RoomLancamentoRepository --> Daos
+RoomCompetenciaRepository --> Daos
+RoomCadastroRepository --> Daos
+RoomRecorrenciaRepository --> Daos
+RoomReembolsoRepository --> Daos
+RoomTransacao --> AppDatabase
+AppDatabase --> Daos
+
+DI ..> RoomLancamentoRepository : fornece como\nLancamentoRepository
+DI ..> RegistrarGasto : injeta dependências
+
+note as N1
+  <b>Controller</b> (GRASP): cada caso de uso tem uma classe que
+  coordena o fluxo e delega as regras ao domínio.
+  <b>Low Coupling</b>: os casos de uso só conhecem interfaces de
+  repositório; o Koin injeta a implementação Room
+  (<b>Dependency Injection</b>). Nos testes entra uma versão em memória.
+  <b>High Cohesion</b>: ViewModel só cuida de estado de tela.
+end note
+@enduml

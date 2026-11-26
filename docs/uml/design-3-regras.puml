@@ -1,0 +1,102 @@
+@startuml design-3-regras
+title Controle de Gastos — Design (vista 3): regras, Strategy e Factory (domain.regra)
+skinparam shadowing false
+skinparam defaultFontName Helvetica
+skinparam classAttributeIconSize 0
+skinparam linetype ortho
+skinparam nodesep 35
+skinparam ranksep 55
+skinparam class {
+  BackgroundColor #FFFFFF
+  BorderColor #444444
+}
+hide circle
+hide empty members
+
+interface PoliticaDeCompetencia <<Strategy>> {
+  + competenciaDe(data : LocalDate) : MesAno
+}
+class CompetenciaPorFechamentoDeFatura {
+  - diaFechamento : Int
+  - diaVencimento : Int
+  + competenciaDe(data) : MesAno
+}
+class CompetenciaPorDataDoGasto {
+  + competenciaDe(data) : MesAno
+}
+abstract class MeioDePagamento {
+  + {abstract} politicaDeCompetencia() : PoliticaDeCompetencia
+}
+class CartaoDeCredito {
+  + politicaDeCompetencia()
+}
+class "ContaCorrente / CarteiraMoedaEstrangeira /\nContaInvestimento" as Outros {
+  + politicaDeCompetencia()
+}
+
+class FabricaDeLancamentos <<Factory>> {
+  + gasto(dados : DadosDoGasto) : Gasto
+  + compraParcelada(dados : DadosDaCompra) : CompraParcelada
+  + previstosDoMes(mes, contasFixas, receitas, investimentos) : List<Lancamento>
+}
+class DadosDoGasto <<value>> {
+  meio, valor, data, descricao,
+  terceiro?, valorEmMoeda?, cotacao?
+}
+class DadosDaCompra <<value>> {
+  cartao, valorTotal, quantidade,
+  dataCompra, descricao, terceiro?
+}
+class Gasto
+class CompraParcelada
+class Lancamento
+
+abstract class RegraVioladaException {
+  + regra : String
+  + mensagem : String
+}
+class ValorInvalido <<RN09>>
+class CotacaoInvalida <<RN05>>
+class ParcelasForaDoLimite <<RN02>>
+class CompetenciaFechada <<RN08>>
+class ReembolsoMaiorQueSaldo <<RN03>>
+class MeioComLancamentos <<RN09>>
+
+PoliticaDeCompetencia <|.. CompetenciaPorFechamentoDeFatura
+PoliticaDeCompetencia <|.. CompetenciaPorDataDoGasto
+MeioDePagamento <|-- CartaoDeCredito
+MeioDePagamento <|-- Outros
+MeioDePagamento .right.> PoliticaDeCompetencia
+CartaoDeCredito ..> CompetenciaPorFechamentoDeFatura : cria
+Outros ..> CompetenciaPorDataDoGasto : cria
+
+FabricaDeLancamentos ..> DadosDoGasto
+FabricaDeLancamentos ..> DadosDaCompra
+FabricaDeLancamentos ..> Gasto : cria
+FabricaDeLancamentos ..> CompraParcelada : cria
+FabricaDeLancamentos ..> Lancamento : cria previstos
+FabricaDeLancamentos ..> PoliticaDeCompetencia : usa
+FabricaDeLancamentos ..> RegraVioladaException : lança
+
+RegraVioladaException <|-- ValorInvalido
+RegraVioladaException <|-- CotacaoInvalida
+RegraVioladaException <|-- ParcelasForaDoLimite
+RegraVioladaException <|-- CompetenciaFechada
+RegraVioladaException <|-- ReembolsoMaiorQueSaldo
+RegraVioladaException <|-- MeioComLancamentos
+
+note as N1
+  <b>Strategy</b> [RN01]: cada meio de pagamento devolve a
+  política que decide o mês do gasto. Cartão: pela data de
+  fechamento e mês do vencimento. Demais: mês da data.
+  Novo tipo de meio = nova política, sem mexer nos casos de uso.
+end note
+note as N2
+  <b>Factory</b>: centraliza a criação das variações de
+  lançamento (simples, em moeda estrangeira, de terceiro,
+  parcelado, previstos do mês) e as validações comuns
+  [RN02, RN05, RN06, RN07, RN09, RN11].
+end note
+N1 .. PoliticaDeCompetencia
+N2 .. FabricaDeLancamentos
+@enduml

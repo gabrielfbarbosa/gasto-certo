@@ -1,0 +1,115 @@
+@startuml design-5-cadastros
+title Controle de Gastos — Design (vista 5): cadastros e demais casos de uso
+skinparam shadowing false
+skinparam defaultFontName Helvetica
+skinparam classAttributeIconSize 0
+skinparam linetype ortho
+skinparam nodesep 25
+skinparam ranksep 55
+skinparam class {
+  BackgroundColor #FFFFFF
+  BorderColor #444444
+}
+hide circle
+hide empty members
+
+package "ui" #F7F7F5 {
+  class CadastrosViewModel
+  class RecorrenciasViewModel
+  class InvestimentosViewModel
+  class LancamentosViewModel
+}
+
+package "application" #EEF4FB {
+  class GerenciarCadastros <<Controller>> {
+    + salvarPessoa(p : Pessoa)
+    + salvarInstituicao(i : Instituicao)
+    + salvarMeio(m : MeioDePagamento)
+    + desativarMeio(m : MeioDePagamento)
+  }
+  class GerenciarRecorrencias <<Controller>> {
+    + salvarContaFixa(c : ContaFixa)
+    + salvarReceitaRecorrente(r : ReceitaRecorrente)
+  }
+  class GerenciarInvestimentos <<Controller>> {
+    + definirAportePlanejado(c : ContaInvestimento, v : Dinheiro)
+    + registrarVenda(c : ContaInvestimento, v : Dinheiro, data : LocalDate)
+  }
+  class RegistrarReceitaAvulsa <<Controller>> {
+    + executar(valor : Dinheiro, data : LocalDate, descricao : String)
+  }
+  class CorrigirLancamento <<Controller>> {
+    + editar(l : Lancamento)
+    + excluir(l : Lancamento)
+    + confirmarPrevisto(l : Lancamento, valorReal : Dinheiro)
+  }
+  class RegistrarReembolso <<Controller>> {
+    + saldoAReceber(terceiro : Pessoa) : SaldoAReceber
+    + executar(terceiro : Pessoa, valor : Dinheiro, data : LocalDate)
+  }
+}
+
+package "domain.repositorio" #FFF8EC {
+  interface LancamentoRepository {
+    + salvar(l : Lancamento)
+    + salvarTodos(l : List<Lancamento>)
+    + excluir(l : Lancamento)
+    + doMes(mes : MesAno) : List<Lancamento>
+    + doPeriodo(inicio, fim) : List<Lancamento>
+    + deTerceiro(p : Pessoa) : List<Gasto>
+  }
+  interface CompetenciaRepository {
+    + buscarOuCriar(mes : MesAno) : Competencia
+    + salvar(c : Competencia)
+  }
+  interface CadastroRepository {
+    + pessoas() : List<Pessoa>
+    + meiosAtivos() : List<MeioDePagamento>
+    + salvarPessoa(p : Pessoa)
+    + salvarInstituicao(i : Instituicao)
+    + salvarMeio(m : MeioDePagamento)
+    + possuiLancamentos(m : MeioDePagamento) : Boolean
+  }
+  interface RecorrenciaRepository {
+    + salvarContaFixa(c : ContaFixa)
+    + salvarReceita(r : ReceitaRecorrente)
+  }
+  interface ReembolsoRepository {
+    + salvar(r : Reembolso)
+    + deTerceiro(p : Pessoa) : List<Reembolso>
+  }
+}
+package "domain.regra" #FFF8EC {
+  class FabricaDeLancamentos <<Factory>>
+}
+
+CadastrosViewModel --> GerenciarCadastros
+RecorrenciasViewModel --> GerenciarRecorrencias
+InvestimentosViewModel --> GerenciarInvestimentos
+LancamentosViewModel --> RegistrarReceitaAvulsa
+LancamentosViewModel --> CorrigirLancamento
+LancamentosViewModel --> RegistrarReembolso
+
+GerenciarCadastros --> CadastroRepository
+GerenciarRecorrencias --> RecorrenciaRepository
+GerenciarRecorrencias --> FabricaDeLancamentos
+GerenciarRecorrencias --> LancamentoRepository
+GerenciarInvestimentos --> CadastroRepository
+GerenciarInvestimentos --> LancamentoRepository
+RegistrarReceitaAvulsa --> LancamentoRepository
+RegistrarReceitaAvulsa --> CompetenciaRepository
+CorrigirLancamento --> LancamentoRepository
+CorrigirLancamento --> CompetenciaRepository
+RegistrarReembolso --> LancamentoRepository
+RegistrarReembolso --> ReembolsoRepository
+
+note as N1
+  As implementações Room destas interfaces seguem
+  o mesmo padrão da vista 4 (Room*Repository + DAOs),
+  injetadas pelo Koin.
+  GerenciarRecorrencias usa a Factory para gerar o previsto
+  do mês aberto ao cadastrar uma conta fixa  [RN06].
+  GerenciarCadastros desativa, mas não exclui, meio com
+  lançamentos  [RN09].
+end note
+@enduml
