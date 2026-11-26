@@ -47,7 +47,19 @@ kotlin {
            instrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
        }
     }
+
+    // Reaplica a hierarquia padrão (commonMain → iosMain, webMain…) antes de criar o mobileMain;
+    // sem isso, o dependsOn manual abaixo desligaria o template padrão.
+    applyDefaultHierarchyTemplate()
+
     sourceSets {
+        // mobileMain: código compartilhado só entre Android e iOS (Room KMP, que não roda na Web).
+        val mobileMain by creating {
+            dependsOn(commonMain.get())
+        }
+        androidMain.get().dependsOn(mobileMain)
+        iosMain.get().dependsOn(mobileMain)
+
         androidMain.dependencies {
             implementation(libs.compose.uiToolingPreview)
             implementation(libs.compose.uiTooling)
@@ -87,3 +99,46 @@ kotlin {
 dependencies {
     androidRuntimeClasspath(libs.compose.uiTooling)
 }
+
+/**
+ * RNF07 — o domínio não depende de framework nem de outra camada.
+ * Falha se algum arquivo em `domain/` importar algo fora da lista permitida:
+ * Kotlin puro, kotlinx-datetime e o próprio domínio; `kotlinx.coroutines.flow` só em `domain.repositorio`.
+ */
+abstract class VerificarDominio : DefaultTask() {
+    @get:InputFiles
+    @get:PathSensitive(PathSensitivity.RELATIVE)
+    abstract val fontes: ConfigurableFileCollection
+
+    @get:OutputFile
+    abstract val relatorio: RegularFileProperty
+
+    @TaskAction
+    fun verificar() {
+        val permitidos = listOf("kotlin.", "kotlinx.datetime.", "br.com.gabriel.gastocerto.domain.")
+        val permitidosNoRepositorio = permitidos + "kotlinx.coroutines.flow."
+        val importacao = Regex("""^\s*import\s+([\w.]+)""")
+        val violacoes = fontes.files.sorted().flatMap { arquivo ->
+            val noRepositorio = arquivo.invariantSeparatorsPath.contains("/domain/repositorio/")
+            val lista = if (noRepositorio) permitidosNoRepositorio else permitidos
+            arquivo.readLines().mapIndexedNotNull { i, linha ->
+                val pacote = importacao.find(linha)?.groupValues?.get(1) ?: return@mapIndexedNotNull null
+                if (lista.none { pacote.startsWith(it) }) "${arquivo.name}:${i + 1}: import $pacote" else null
+            }
+        }
+        val texto = if (violacoes.isEmpty()) "OK: ${fontes.files.size} arquivo(s) do domínio sem dependências proibidas."
+        else "RNF07 violado — o domínio só pode importar ${permitidos.joinToString()} " +
+            "(e kotlinx.coroutines.flow em domain.repositorio):\n" + violacoes.joinToString("\n")
+        relatorio.get().asFile.writeText(texto)
+        if (violacoes.isNotEmpty()) throw GradleException(texto)
+    }
+}
+
+val verificarDominio by tasks.registering(VerificarDominio::class) {
+    group = "verification"
+    description = "RNF07: verifica que o pacote domain não importa Compose, Room, Koin, Android, iOS nem outras camadas."
+    fontes.from(fileTree("src") { include("*/kotlin/br/com/gabriel/gastocerto/domain/**/*.kt") })
+    relatorio.set(layout.buildDirectory.file("reports/verificarDominio.txt"))
+}
+
+tasks.named("check") { dependsOn(verificarDominio) }
