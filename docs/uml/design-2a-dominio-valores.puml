@@ -1,0 +1,93 @@
+@startuml design-2a-dominio-valores
+!include estilo.iuml
+hide circle
+hide empty members
+hide <<ref>> members
+hide <<ref>> stereotype
+hide <<foco>> stereotype
+title GastoCerto — Design (vista 2a): valores, competência e consultas (domain.model)
+
+class Dinheiro <<value>> {
+  - centavos : Long
+  + plus(outro : Dinheiro) : Dinheiro
+  + minus(outro : Dinheiro) : Dinheiro
+  + dividirEm(n : Int) : List<Dinheiro>
+  + converter(cotacao : Long) : Dinheiro
+  + ehPositivo() : Boolean
+}
+class MesAno <<value>> {
+  + ano : Int
+  + mes : Int
+  + proximo() : MesAno
+  + dia(dia : Int) : LocalDate
+}
+class Competencia <<foco>> {
+  + mesAno : MesAno
+  - situacao : ABERTA | FECHADA
+  + fechar()
+  + reabrir()
+  + garantirAberta()
+}
+class ResumoDoPeriodo <<value>> {
+  + receitas : Dinheiro
+  + gastoTotal : Dinheiro
+  + gastosDeTerceiros : Dinheiro
+  + porMeio : Map<MeioDePagamento, Dinheiro>
+  + porTitular : Map<Pessoa, Dinheiro>
+  + sobra() : Dinheiro
+  + {static} de(lancamentos, titular : Pessoa?) : ResumoDoPeriodo
+}
+class SaldoAReceber <<value>> {
+  + terceiro : Pessoa
+  + valor : Dinheiro
+  + {static} de(gastos, reembolsos) : SaldoAReceber
+  + validarReembolso(valor : Dinheiro)
+}
+class Fatura <<value>> {
+  + cartao : CartaoDeCredito
+  + competencia : MesAno
+  + dataFechamento : LocalDate
+  + dataVencimento : LocalDate
+  + gastos : List<Gasto>
+  + total() : Dinheiro
+  + {static} de(cartao, mes, gastos) : Fatura
+}
+class Lancamento <<ref>>
+class Gasto <<ref>>
+class Reembolso <<ref>>
+class CartaoDeCredito <<ref>>
+
+Competencia --> "1" MesAno
+ResumoDoPeriodo ..> Lancamento : soma
+SaldoAReceber ..> Gasto
+SaldoAReceber ..> Reembolso
+Fatura --> "1" CartaoDeCredito
+Fatura o-- "0..*" Gasto
+Lancamento ..> Dinheiro
+Lancamento ..> MesAno
+
+note right of Dinheiro
+  Centavos em Long: sem ponto flutuante [RNF04].
+  dividirEm põe o resto na 1ª parcela [RN02].
+  cotacao com 4 casas em Long (5,4321 → 54321);
+  arredonda ao centavo, half-up [RN05 · D1]
+end note
+note bottom of Competencia
+  FECHADA não aceita lançamentos;
+  fechar() de novo lança CompetenciaFechada [RN08]
+end note
+note bottom of ResumoDoPeriodo
+  sobra = receitas − (gastoTotal − gastosDeTerceiros) [RN04]
+  filtro por titular [RN10]
+end note
+note bottom of SaldoAReceber
+  reembolso > saldo → ReembolsoMaiorQueSaldo [RN03]
+end note
+note bottom of Fatura
+  Não é gravada: montada do cartão + competência
+  (mês do vencimento) [RN01 · RF13]
+end note
+legend left
+  Cinza = classe detalhada em outra vista (2b ou 2c)
+endlegend
+@enduml

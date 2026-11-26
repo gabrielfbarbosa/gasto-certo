@@ -1,0 +1,38 @@
+@startuml sequencia-uc02-2-confirmacao
+!include estilo.iuml
+hide footbox
+hide <<foco>> stereotype
+autonumber "<b>0"
+title UC02 – Registrar compra parcelada · Parte 2/2: confirmação
+
+actor "Usuário" as U
+boundary "RegistrarGastoScreen" as Tela
+participant "RegistrarGastoViewModel" as VM <<viewmodel>>
+participant "RegistrarCompra\nParceladaUseCase" as UC <<foco>>
+participant "competencia :\nCompetencia" as Comp
+participant "CompetenciaRepository" as CRepo <<repositório>>
+participant "LancamentoRepository" as LRepo <<repositório>>
+
+U -> Tela : confirma
+Tela -> VM : confirmar()
+activate VM
+VM -> UC : executar(dados)
+activate UC
+ref over UC : repete a Parte 1:\nvalidar, criar a compra\ne gerar as parcelas
+UC -> CRepo : buscarOuCriar(mes1)
+CRepo --> UC : competencia
+UC -> Comp : garantirAberta()
+alt competência fechada [RN08]
+  Comp --> UC : <<lança>> CompetenciaFechada
+  UC --> VM : CompetenciaFechada
+  VM --> Tela : evento "Mês fechado. Reabrir?"
+  Tela --> U : reabrir ou cancelar
+else competência aberta
+  UC -> LRepo : salvarTodos(parcelas)
+  UC --> VM : compra
+  deactivate UC
+  VM --> Tela : estado com a fatura atualizada\n+ evento "compra registrada"
+  deactivate VM
+  Tela --> U : compra registrada
+end
+@enduml

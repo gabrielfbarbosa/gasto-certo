@@ -1,0 +1,78 @@
+@startuml design-4a-casos-de-uso-centrais
+!include estilo.iuml
+hide circle
+hide empty members
+hide <<ref>> members
+hide <<ref>> stereotype
+hide <<foco>> stereotype
+title GastoCerto — Design (vista 4a): interface e casos de uso centrais (ui → usecase)
+left to right direction
+
+package "ui" {
+  class RegistrarGastoScreen <<Composable>>
+  class FecharMesScreen <<Composable>>
+  class ResumoScreen <<Composable>>
+  class RegistrarGastoViewModel {
+    + estado : StateFlow<RegistrarGastoEstado>
+    + eventos : Flow<RegistrarGastoEvento>
+    + previaParcelas()
+    + confirmar()
+  }
+  class FecharMesViewModel {
+    + estado : StateFlow<FecharMesEstado>
+    + eventos : Flow<FecharMesEvento>
+    + carregar(mes : MesAno)
+    + fechar()
+    + reabrir()
+  }
+  class ResumoViewModel {
+    + estado : StateFlow<ResumoEstado>
+    + selecionarPeriodo(p : Periodo)
+    + filtrarTitular(p : Pessoa?)
+  }
+}
+package "usecase" {
+  class RegistrarGastoUseCase <<Controller>> {
+    + executar(dados : DadosDoGasto) : Gasto
+  }
+  class RegistrarCompraParceladaUseCase <<Controller>> {
+    + previa(dados : DadosDaCompra) : List<Parcela>
+    + executar(dados : DadosDaCompra) : CompraParcelada
+  }
+  class FecharMesUseCase <<foco>> {
+    + executar(mes : MesAno) : Competencia
+    - semDuplicados(previstos, existentes) : List<Lancamento>
+  }
+  class ReabrirMesUseCase <<Controller>> {
+    + executar(mes : MesAno)
+  }
+  class ConsultarResumoUseCase <<Controller>> {
+    + doMes(mes : MesAno, titular : Pessoa?) : ResumoDoPeriodo
+    + daSemana(data : LocalDate) : ResumoDoPeriodo
+    + doAno(ano : Int) : ResumoDoPeriodo
+  }
+  class ConsultarFaturaUseCase <<Controller>> {
+    + executar(cartao : CartaoDeCredito, mes : MesAno) : Fatura
+  }
+}
+
+RegistrarGastoScreen --> RegistrarGastoViewModel
+FecharMesScreen --> FecharMesViewModel
+ResumoScreen --> ResumoViewModel
+RegistrarGastoViewModel --> RegistrarGastoUseCase
+RegistrarGastoViewModel --> RegistrarCompraParceladaUseCase
+FecharMesViewModel --> ConsultarResumoUseCase
+FecharMesViewModel --> FecharMesUseCase
+FecharMesViewModel --> ReabrirMesUseCase
+ResumoViewModel --> ConsultarResumoUseCase
+ResumoViewModel --> ConsultarFaturaUseCase
+
+legend right
+  <b>MVVM + fluxo unidirecional</b>: a tela desenha só o XEstado
+  (UiState imutável) e reage a XEvento (efeito único: snackbar,
+  navegar, oferecer reabrir). Ações = métodos do ViewModel.
+  <b>Controller (GRASP)</b>: cada *UseCase coordena um caso de uso
+  e delega as regras ao domínio. FecharMesUseCase em destaque.
+  Métodos dos use cases são suspend [D4].
+endlegend
+@enduml

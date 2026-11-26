@@ -1,0 +1,88 @@
+@startuml design-4b-persistencia
+!include estilo.iuml
+hide circle
+hide empty members
+hide <<ref>> members
+hide <<ref>> stereotype
+hide <<foco>> stereotype
+set separator none
+title GastoCerto — Design (vista 4b): repositórios, persistência e injeção (domain.repositorio · data · di)
+
+package "domain.repositorio" {
+  interface LancamentoRepository {
+    + salvar(l : Lancamento)
+    + salvarTodos(l : List<Lancamento>)
+    + excluir(l : Lancamento)
+    + doMes(mes : MesAno) : List<Lancamento>
+    + doPeriodo(inicio, fim) : List<Lancamento>
+    + deTerceiro(p : Pessoa) : List<Gasto>
+  }
+  interface CompetenciaRepository {
+    + buscarOuCriar(mes : MesAno) : Competencia
+    + salvar(c : Competencia)
+  }
+  interface CadastroRepository {
+    + pessoas() : List<Pessoa>
+    + meiosAtivos() : List<MeioDePagamento>
+    + salvarPessoa(p : Pessoa)
+    + salvarInstituicao(i : Instituicao)
+    + salvarMeio(m : MeioDePagamento)
+    + possuiLancamentos(m : MeioDePagamento) : Boolean
+  }
+  interface RecorrenciaRepository {
+    + contasFixasAtivas() : List<ContaFixa>
+    + receitasAtivas() : List<ReceitaRecorrente>
+    + investimentosComAporte() : List<ContaInvestimento>
+    + salvarContaFixa(c : ContaFixa)
+    + salvarReceita(r : ReceitaRecorrente)
+  }
+  interface ReembolsoRepository {
+    + salvar(r : Reembolso)
+    + deTerceiro(p : Pessoa) : List<Reembolso>
+  }
+  interface Transacao <<foco>> {
+    + executar(bloco : suspend () -> T) : T
+  }
+}
+package "data (Room KMP · mobileMain)" {
+  class AppDatabase <<RoomDatabase>>
+  class "Room*Repository (5)" as RoomRepos
+  class RoomTransacao
+  class "DAOs + Entities + Mappers" as Daos
+}
+package "data.memoria (commonMain)" {
+  class "*EmMemoriaRepository (5)" as MemRepos
+  class TransacaoEmMemoria
+}
+package "di (Koin)" {
+  class moduloApp
+  class moduloPlataforma
+}
+class "*UseCase" as UseCases <<ref>>
+
+UseCases .down.> LancamentoRepository : usa
+UseCases .down.> Transacao : usa
+moduloApp .down.> UseCases : factory
+moduloPlataforma .down.> RoomRepos : single (Android/iOS)
+moduloPlataforma .down.> MemRepos : single (Web)
+RoomRepos .up.|> LancamentoRepository : implementa (as 5)
+RoomTransacao .up.|> Transacao
+MemRepos .up.|> LancamentoRepository : implementa (as 5)
+TransacaoEmMemoria .up.|> Transacao
+RoomRepos --> Daos
+RoomTransacao --> AppDatabase
+AppDatabase --> Daos
+LancamentoRepository -[hidden]down- MemRepos
+CompetenciaRepository -[hidden]down- RoomRepos
+CadastroRepository -[hidden]right- RecorrenciaRepository
+
+legend right
+  Todos os métodos são suspend; Flow só onde a tela observa [D4].
+  RoomTransacao usa useWriterConnection { immediateTransaction { } }:
+  tudo ou nada no fechamento do mês (UC03).
+  <b>Low Coupling + Dependency Injection</b>: os use cases conhecem só
+  as interfaces; o Koin injeta Room no mobile e memória na Web/testes.
+  Room*Repository e *EmMemoriaRepository: uma classe por interface,
+  com o mesmo nome (ex.: RoomLancamentoRepository); setas resumidas.
+endlegend
+@enduml

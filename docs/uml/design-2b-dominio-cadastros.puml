@@ -1,0 +1,85 @@
+@startuml design-2b-dominio-cadastros
+!include estilo.iuml
+hide circle
+hide empty members
+hide <<ref>> members
+hide <<ref>> stereotype
+hide <<foco>> stereotype
+title GastoCerto — Design (vista 2b): cadastros e recorrências (domain.model)
+
+class Pessoa {
+  + id : String
+  + nome : String
+  + papel : USUARIO | TITULAR | TERCEIRO
+}
+class Instituicao {
+  + id : String
+  + nome : String
+}
+abstract class MeioDePagamento <<foco>> {
+  + id : String
+  + nome : String
+  + titular : Pessoa
+  + instituicao : Instituicao
+  + ativo : Boolean
+  + {abstract} politicaDeCompetencia() : PoliticaDeCompetencia
+}
+class CartaoDeCredito {
+  + diaFechamento : Int
+  + diaVencimento : Int
+}
+class ContaCorrente
+class CarteiraMoedaEstrangeira {
+  + moeda : String
+}
+class ContaInvestimento {
+  + aportePlanejadoMensal : Dinheiro?
+  + gerarAportePrevisto(mes : MesAno) : Gasto?
+}
+class ContaFixa {
+  + id : String
+  + descricao : String
+  + valorPrevisto : Dinheiro
+  + diaVencimento : Int
+  + meio : MeioDePagamento
+  + gerarPrevisto(mes : MesAno) : Gasto
+}
+class ReceitaRecorrente {
+  + id : String
+  + descricao : String
+  + valor : Dinheiro
+  + diaRecebimento : Int
+  + gerarPrevista(mes : MesAno) : Receita
+}
+class Gasto <<ref>>
+class Receita <<ref>>
+interface PoliticaDeCompetencia <<ref>>
+
+MeioDePagamento "0..*" -up-> "1" Pessoa : titular
+MeioDePagamento "0..*" -up-> "1" Instituicao
+MeioDePagamento <|-- CartaoDeCredito
+MeioDePagamento <|-- ContaCorrente
+MeioDePagamento <|-- CarteiraMoedaEstrangeira
+MeioDePagamento <|-- ContaInvestimento
+MeioDePagamento .right.> PoliticaDeCompetencia
+ContaFixa --> "1" MeioDePagamento : meio
+ContaFixa ..> Gasto : cria
+ReceitaRecorrente ..> Receita : cria
+ContaInvestimento ..> Gasto : cria
+
+note bottom of ContaFixa
+  <b>Creator</b>: gera o gasto PREVISTO do mês,
+  com origemId = id da conta [RN06 · D3]
+end note
+note bottom of ReceitaRecorrente
+  <b>Creator</b>: salário PREVISTO no dia
+  de recebimento [RN07 · D3]
+end note
+note bottom of CartaoDeCredito
+  dias entre 1 e 31 [RN09]
+end note
+legend left
+  id : String = UUID gerado no domínio; igualdade por id [D2].
+  Cinza = detalhada em outra vista. Dia inexistente no mês → último dia.
+endlegend
+@enduml

@@ -1,0 +1,30 @@
+@startuml sequencia-uc03-3-previstos
+!include estilo.iuml
+hide footbox
+hide <<foco>> stereotype
+autonumber "<b>0"
+title UC03 – Fechar o mês · Parte 3/3: gerar os previstos do mês seguinte
+
+participant "FecharMesUseCase" as UC <<foco>>
+participant "FabricaDeLancamentos" as Fab
+participant "ContaFixa" as CF
+participant "ReceitaRecorrente" as RR
+participant "ContaInvestimento" as CI
+
+UC -> Fab : previstosDoMes(mes, contas,\nreceitas, investimentos)
+activate Fab
+loop cada conta fixa ativa
+  Fab -> CF : gerarPrevisto(mes)
+  CF --> Fab : gasto PREVISTO no vencimento\n(dia inexistente = último dia) [RN06]
+end
+loop cada receita recorrente
+  Fab -> RR : gerarPrevista(mes)
+  RR --> Fab : receita PREVISTA no recebimento [RN07]
+end
+loop cada corretora com aporte planejado
+  Fab -> CI : gerarAportePrevisto(mes)
+  CI --> Fab : aporte PREVISTO [RN11]
+end
+Fab --> UC : previstos (cada um com origemId)
+deactivate Fab
+@enduml

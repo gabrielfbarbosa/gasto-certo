@@ -1,0 +1,68 @@
+@startuml modelo-dominio-1-cadastros
+!include estilo.iuml
+title GastoCerto — Modelo de Domínio (1/2): cadastros e recorrências
+hide methods
+hide circle
+hide empty members
+hide <<ref>> members
+hide <<ref>> stereotype
+hide <<foco>> stereotype
+
+class Pessoa {
+  nome
+  papel : USUARIO | TITULAR | TERCEIRO
+}
+class Instituicao {
+  nome
+}
+abstract class MeioDePagamento {
+  nome
+  ativo : Boolean
+}
+class CartaoDeCredito {
+  diaFechamento : 1..31
+  diaVencimento : 1..31
+}
+class ContaCorrente <<débito / Pix>>
+class CarteiraMoedaEstrangeira {
+  moeda
+}
+class ContaInvestimento <<corretora>> {
+  aportePlanejadoMensal : Dinheiro [0..1]
+}
+class ContaFixa {
+  descricao
+  valorPrevisto : Dinheiro
+  diaVencimento : 1..31
+}
+class ReceitaRecorrente {
+  descricao
+  valor : Dinheiro
+  diaRecebimento : 1..31
+}
+
+Instituicao "1" -- "0..*" MeioDePagamento : emite >
+Pessoa "1" -- "0..*" MeioDePagamento : titular de >
+MeioDePagamento <|-- CartaoDeCredito
+MeioDePagamento <|-- ContaCorrente
+MeioDePagamento <|-- CarteiraMoedaEstrangeira
+MeioDePagamento <|-- ContaInvestimento
+ContaFixa "0..*" -up- "1" MeioDePagamento : debitada em >
+
+note right of Pessoa
+  Todo meio tem um titular; uma instituição
+  pode ter cartões de titulares diferentes [RN10]
+end note
+note bottom of ContaFixa
+  Gera um gasto PREVISTO por mês
+  no dia de vencimento [RN06]
+end note
+note bottom of ReceitaRecorrente
+  Salário: receita PREVISTA no
+  dia de recebimento [RN07]
+end note
+note bottom of CartaoDeCredito
+  Meio com lançamentos não é excluído,
+  só desativado [RN09]
+end note
+@enduml

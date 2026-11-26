@@ -1,64 +1,53 @@
 @startuml casos-de-uso
-title Controle de Gastos — Diagrama de Casos de Uso
-left to right direction
-skinparam shadowing false
-skinparam defaultFontName Helvetica
-skinparam usecase {
-  BackgroundColor #FFFFFF
-  BorderColor #444444
-}
+!include estilo.iuml
+title GastoCerto — Diagrama de Casos de Uso
 skinparam rectangle {
-  BorderColor #444444
+  BackgroundColor #FFFFFF
+  BorderColor #BFC0C0
+  FontColor #4F5D75
 }
 
-actor "Usuário titular" as U
+actor "Usuário\ntitular" as U
 
-rectangle "Controle de Gastos" {
-  usecase "UC01\nRegistrar gasto" as UC01 #E7F1FB
-  usecase "UC02\nRegistrar compra\nparcelada" as UC02 #E7F1FB
-  usecase "UC03\nFechar o mês e\nabrir o seguinte" as UC03 #E7F1FB
-  usecase "UC04\nConsultar resumo\ndo período" as UC04
-  usecase "UC05\nConsultar fatura\ndo cartão" as UC05
-  usecase "UC06\nGerenciar meios\nde pagamento" as UC06
-  usecase "UC07\nGerenciar contas\nfixas e salário" as UC07
-  usecase "UC08\nRegistrar receita\navulsa" as UC08
-  usecase "UC09\nCorrigir\nlançamento" as UC09
-  usecase "UC10\nGerenciar\ninvestimentos" as UC10
-  usecase "UC11\nRegistrar reembolso\nde terceiro" as UC11
-
-  usecase "Gerar lançamentos\nrecorrentes previstos" as GLR
+rectangle "GastoCerto" {
+  rectangle "Movimentação do mês" {
+    usecase "UC01\nRegistrar gasto" as UC01 <<central>>
+    usecase "UC02\nRegistrar compra\nparcelada" as UC02 <<central>>
+    usecase "UC08\nRegistrar receita\navulsa" as UC08
+    usecase "UC09\nCorrigir\nlançamento" as UC09
+    usecase "UC11\nRegistrar reembolso\nde terceiro" as UC11
+  }
+  rectangle "Fechamento e consultas" {
+    usecase "UC03\nFechar o mês e\nabrir o seguinte" as UC03 <<central>>
+    usecase "Gerar lançamentos\nrecorrentes previstos" as GLR
+    usecase "UC04\nConsultar resumo\ndo período" as UC04
+    usecase "UC05\nConsultar fatura\ndo cartão" as UC05
+  }
+  rectangle "Cadastros" {
+    usecase "UC06\nGerenciar meios\nde pagamento" as UC06
+    usecase "UC07\nGerenciar contas\nfixas e salário" as UC07
+    usecase "UC10\nGerenciar\ninvestimentos" as UC10
+  }
 }
 
-U --> UC03
 U --> UC01
 U --> UC02
+U --> UC08
+U --> UC09
+U --> UC11
+U --> UC03
 U --> UC04
 U --> UC05
 U --> UC06
 U --> UC07
-U --> UC08
-U --> UC09
 U --> UC10
-U --> UC11
+UC02 .> UC01 : <<extend>>
+UC03 .> GLR : <<include>>
 
-UC03 ..> GLR : <<include>>
-UC02 .[norank].> UC01 : <<extend>>
-
-note as N2
-  UC02 estende UC01 no ponto
-  "pagamento parcelado no crédito"
-end note
-
-note as N1
-  Titular de cartão (ex.: cônjuge) e
-  terceiro reembolsante (ex.: pai)
-  são partes interessadas: não operam
-  o sistema nesta versão.
-end note
-
-legend bottom right
-  Azul = casos de uso centrais, com
-  especificação completa (UC01 a UC03);
-  UC02 e UC03 têm diagrama de sequência
+legend right
+  <b>Destaque</b> = casos de uso centrais (especificação completa);
+  UC02 e UC03 têm diagrama de sequência.
+  Titular de cartão (ex.: cônjuge) e terceiro reembolsante
+  (ex.: pai) são partes interessadas: não operam o sistema.
 endlegend
 @enduml

@@ -1,0 +1,84 @@
+@startuml modelo-dominio-2-movimentacao
+!include estilo.iuml
+title GastoCerto — Modelo de Domínio (2/2): lançamentos, competência e fatura
+hide methods
+hide circle
+hide empty members
+hide <<ref>> members
+hide <<ref>> stereotype
+hide <<foco>> stereotype
+
+class Competencia <<foco>> {
+  mesAno
+  situacao : ABERTA | FECHADA
+  /receitas : Dinheiro
+  /gastoTotal : Dinheiro
+  /gastosDeTerceiros : Dinheiro
+  /sobra : Dinheiro
+}
+abstract class Lancamento {
+  valor : Dinheiro
+  data
+  descricao
+  situacao : PREVISTO | REALIZADO
+}
+class Gasto
+class Receita {
+  tipo : SALARIO | AVULSA | VENDA_INVESTIMENTO
+}
+class Parcela {
+  numero : k/N
+}
+class CompraParcelada {
+  valorTotal : Dinheiro
+  quantidadeParcelas : 2..48
+}
+class ConversaoCambial {
+  valorOriginal
+  cotacao
+}
+class Fatura {
+  dataFechamento
+  dataVencimento
+  /total : Dinheiro
+}
+class Reembolso {
+  valor : Dinheiro
+  data
+}
+class "MeioDePagamento" as Meio <<ref>>
+class "CartaoDeCredito" as Cartao <<ref>>
+class "Pessoa (terceiro)" as Terceiro <<ref>>
+class "ContaFixa / ReceitaRecorrente /\nContaInvestimento" as Recorrencias <<ref>>
+
+Lancamento "0..*" -up- "1" Competencia : pertence a >
+Lancamento <|-- Gasto
+Lancamento <|-- Receita
+Gasto <|-- Parcela
+CompraParcelada "1" *-- "2..48" Parcela : dividida em >
+Gasto "0..*" -- "1" Meio : pago com >
+Gasto "0..*" -- "0..1" Terceiro : em nome de >
+Gasto "1" *-- "0..1" ConversaoCambial : convertido por >
+Terceiro "1" -- "0..*" Reembolso : devolve >
+Cartao "1" -- "0..*" Fatura : gera >
+Fatura "0..*" -up- "1" Competencia : vence em >
+Fatura "0..1" o-- "0..*" Gasto : compõe >
+Recorrencias "1" .. "0..*" Lancamento : origina >
+
+note right of Competencia
+  sobra = receitas − (gastoTotal − gastosDeTerceiros) [RN04]
+  FECHADA não aceita inclusão, edição nem exclusão [RN08]
+end note
+note bottom of Fatura
+  Até o fechamento: fatura do ciclo; depois: a seguinte.
+  Competência da fatura = mês do vencimento [RN01]
+end note
+note bottom of Reembolso
+  Só dá baixa no "a receber" do terceiro;
+  não é receita [RN03]
+end note
+
+legend left
+  Cinza = classe detalhada no modelo 1/2 (cadastros)
+endlegend
+@enduml

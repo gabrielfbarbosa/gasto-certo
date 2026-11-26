@@ -1,0 +1,61 @@
+@startuml sequencia-uc02-1-previa
+!include estilo.iuml
+hide footbox
+hide <<foco>> stereotype
+autonumber "<b>0"
+title UC02 – Registrar compra parcelada · Parte 1/2: prévia das parcelas
+
+actor "Usuário" as U
+boundary "RegistrarGastoScreen" as Tela
+participant "RegistrarGastoViewModel" as VM <<viewmodel>>
+participant "RegistrarCompra\nParceladaUseCase" as UC <<foco>>
+participant "FabricaDeLancamentos" as Fab
+participant "compra :\nCompraParcelada" as CP
+participant "cartao :\nCartaoDeCredito" as Cartao
+participant "politica :\nCompetenciaPor\nFechamentoDeFatura" as Pol
+participant "valorTotal :\nDinheiro" as Din
+participant "Parcela" as Par
+
+U -> Tela : cartão, valor total, nº de parcelas,\ndata e descrição
+Tela -> VM : previaParcelas()
+activate VM
+VM -> UC : previa(dados)
+activate UC
+UC -> Fab : compraParcelada(dados)
+activate Fab
+alt valor <= 0
+  Fab --> UC : <<lança>> ValorInvalido [RN09]
+  UC --> VM : ValorInvalido
+  VM --> Tela : estado com erro (E1)
+else quantidade fora de 2..48
+  Fab --> UC : <<lança>> ParcelasForaDoLimite [RN02]
+  UC --> VM : ParcelasForaDoLimite
+  VM --> Tela : estado com erro (E2)
+else dados válidos
+  create CP
+  Fab -> CP : <<create>>
+  Fab --> UC : compra
+  deactivate Fab
+  UC -> CP : gerarParcelas()
+  activate CP
+  CP -> Cartao : politicaDeCompetencia()
+  create Pol
+  Cartao -> Pol : <<create>>(diaFechamento, diaVencimento)
+  Cartao --> CP : politica
+  CP -> Pol : competenciaDe(dataCompra)
+  Pol --> CP : mes1 [RN01]
+  CP -> Din : dividirEm(quantidade)
+  Din --> CP : valores (resto na 1ª) [RN02]
+  loop k = 1..N
+    create Par
+    CP -> Par : <<create>>(k, N, valores[k],\nmes1 + (k − 1), compraId, terceiro?)
+  end
+  CP --> UC : parcelas
+  deactivate CP
+  UC --> VM : parcelas
+  deactivate UC
+  VM --> Tela : estado com a prévia\n"k/N – valor – fatura"
+  deactivate VM
+  Tela --> U : mostra a prévia
+end
+@enduml

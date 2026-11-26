@@ -1,0 +1,54 @@
+@startuml sequencia-uc03-2-fechamento
+!include estilo.iuml
+hide footbox
+hide <<foco>> stereotype
+autonumber "<b>0"
+title UC03 – Fechar o mês · Parte 2/3: fechamento numa única transação
+
+actor "Usuário" as U
+boundary "FecharMesScreen" as Tela
+participant "FecharMesViewModel" as VM <<viewmodel>>
+participant "FecharMesUseCase" as UC <<foco>>
+participant "Transacao" as Tx <<repositório>>
+participant "Competencia\nRepository" as CRepo <<repositório>>
+participant "atual :\nCompetencia" as Atual
+participant "Recorrencia\nRepository" as RRepo <<repositório>>
+participant "FabricaDe\nLancamentos" as Fab
+participant "Lancamento\nRepository" as LRepo <<repositório>>
+
+U -> Tela : confirma o fechamento
+Tela -> VM : fechar()
+activate VM
+VM -> UC : executar(mes)
+activate UC
+UC -> Tx : executar { … }
+activate Tx
+UC -> CRepo : buscarOuCriar(mes)
+CRepo --> UC : atual
+UC -> Atual : fechar()
+alt já estava fechada (E1)
+  Atual --> UC : <<lança>> CompetenciaFechada [RN08]
+  UC --> VM : CompetenciaFechada
+  VM --> Tela : evento "Mês já fechado. Reabrir?"
+else aberta
+  UC -> CRepo : salvar(atual)
+  UC -> CRepo : buscarOuCriar(mes.proximo())
+  CRepo --> UC : seguinte
+  UC -> RRepo : contasFixasAtivas(), receitasAtivas(),\ninvestimentosComAporte()
+  RRepo --> UC : contas, receitas, investimentos
+  UC -> Fab : previstosDoMes(seguinte.mesAno,\ncontas, receitas, investimentos)
+  ref over Fab : Parte 3:\ngerar previstos
+  Fab --> UC : previstos
+  UC -> LRepo : doMes(seguinte.mesAno)
+  LRepo --> UC : existentes
+  UC -> UC : semDuplicados(previstos, existentes)\n(A3 · mesmo origemId)
+  UC -> LRepo : salvarTodos(novos)
+end
+Tx --> UC : confirma tudo ou desfaz tudo
+deactivate Tx
+UC --> VM : seguinte
+deactivate UC
+VM --> Tela : estado com a nova competência
+deactivate VM
+Tela --> U : mostra o mês seguinte
+@enduml

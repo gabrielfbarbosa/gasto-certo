@@ -1,0 +1,142 @@
+' =====================================================================
+' GastoCerto — estilo compartilhado de todos os diagramas PlantUML
+' Inspirado no sistema visual da skill diagram-design:
+'   papel #F5F5F5 · tinta #2D3142 · secundário #4F5D75 · destaque #BF4520
+'   destaque (<<foco>>) em no máximo 1–2 elementos por diagrama
+'   classes de outra vista (<<ref>>) em cinza, só com o nome
+' Uso: !include estilo.iuml  (logo após @startuml)
+' =====================================================================
+skinparam backgroundColor #F5F5F5
+skinparam shadowing false
+skinparam roundCorner 8
+skinparam padding 2
+skinparam defaultFontName "Helvetica Neue"
+skinparam defaultFontSize 12
+skinparam defaultFontColor #2D3142
+skinparam minClassWidth 120
+skinparam nodesep 50
+skinparam ranksep 60
+
+skinparam TitleFontName "Helvetica Neue"
+skinparam TitleFontSize 17
+skinparam TitleFontStyle bold
+skinparam TitleFontColor #2D3142
+
+skinparam ArrowColor #4F5D75
+skinparam ArrowThickness 1.1
+skinparam ArrowFontName Menlo
+skinparam ArrowFontSize 10
+skinparam ArrowFontColor #4F5D75
+
+skinparam NoteBackgroundColor #FFFFFF
+skinparam NoteBorderColor #BFC0C0
+skinparam NoteFontColor #4F5D75
+skinparam NoteFontSize 10
+
+skinparam LegendBackgroundColor #FFFFFF
+skinparam LegendBorderColor #BFC0C0
+skinparam LegendFontColor #4F5D75
+skinparam LegendFontSize 10
+
+skinparam StereotypeFontColor #5A6580
+skinparam StereotypeFontSize 9
+
+' ---------- classes ----------
+skinparam classAttributeIconSize 0
+skinparam class {
+  BackgroundColor #FFFFFF
+  BorderColor #2D3142
+  BorderThickness 1
+  HeaderBackgroundColor #FFFFFF
+  FontStyle bold
+  FontSize 12
+  AttributeFontName Menlo
+  AttributeFontSize 10
+  AttributeFontColor #2D3142
+  StereotypeFontColor #5A6580
+}
+skinparam class<<foco>> {
+  BackgroundColor #F9ECE7
+  HeaderBackgroundColor #F9ECE7
+  BorderColor #BF4520
+  StereotypeFontColor #BF4520
+}
+skinparam class<<ref>> {
+  BackgroundColor #ECECEC
+  HeaderBackgroundColor #ECECEC
+  BorderColor #BFC0C0
+  FontColor #5A6580
+  FontStyle normal
+}
+skinparam interface {
+  BackgroundColor #ECEEF2
+  BorderColor #4F5D75
+}
+
+' ---------- pacotes ----------
+skinparam package {
+  BackgroundColor #FFFFFF
+  BorderColor #BFC0C0
+  FontColor #4F5D75
+  FontSize 11
+  FontStyle bold
+  Style rectangle
+}
+
+' ---------- casos de uso ----------
+skinparam usecase {
+  BackgroundColor #FFFFFF
+  BorderColor #2D3142
+  FontSize 11
+}
+skinparam usecase<<central>> {
+  BackgroundColor #F9ECE7
+  BorderColor #BF4520
+}
+skinparam actor {
+  BorderColor #2D3142
+  BackgroundColor #FFFFFF
+}
+skinparam rectangle {
+  BorderColor #BFC0C0
+  FontColor #4F5D75
+}
+
+' ---------- sequência ----------
+skinparam sequence {
+  ParticipantBackgroundColor #FFFFFF
+  ParticipantBorderColor #2D3142
+  ParticipantFontStyle bold
+  ParticipantFontSize 11
+  ActorBorderColor #2D3142
+  ActorBackgroundColor #FFFFFF
+  LifeLineBorderColor #BFC0C0
+  LifeLineBackgroundColor #ECEEF2
+  GroupBorderColor #BFC0C0
+  GroupBackgroundColor #ECECEC
+  GroupHeaderFontColor #4F5D75
+  GroupFontColor #4F5D75
+  DividerBackgroundColor #ECECEC
+  DividerBorderColor #BFC0C0
+  DividerFontColor #4F5D75
+  ReferenceBackgroundColor #FFFFFF
+  ReferenceBorderColor #BFC0C0
+  BoxBorderColor #D9DBE0
+  MessageAlignment center
+}
+skinparam participant<<foco>> {
+  BackgroundColor #F9ECE7
+  BorderColor #BF4520
+}
+skinparam participant<<repositório>> {
+  BackgroundColor #ECEEF2
+  BorderColor #4F5D75
+}
+skinparam participant<<viewmodel>> {
+  BackgroundColor #ECEEF2
+  BorderColor #5A6580
+}
+skinparam boundary {
+  BackgroundColor #ECEEF2
+  BorderColor #5A6580
+}

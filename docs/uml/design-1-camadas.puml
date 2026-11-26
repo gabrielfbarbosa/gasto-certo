@@ -1,57 +1,60 @@
 @startuml design-1-camadas
-title Controle de Gastos — Design (vista 1): camadas e dependências
-skinparam shadowing false
-skinparam defaultFontName Helvetica
-skinparam packageStyle rectangle
-skinparam nodesep 40
-skinparam ranksep 50
-skinparam package {
-  BorderColor #444444
+!include estilo.iuml
+title GastoCerto — Design (vista 1): camadas e dependências
+skinparam rectangle {
+  BackgroundColor #FFFFFF
+  BorderColor #2D3142
+  FontColor #2D3142
+  FontSize 11
+  StereotypeFontColor #5A6580
 }
-
-package "androidApp / iosApp / webApp\n<size:10>pontos de entrada de cada plataforma</size>" as plat #F7F7F5 {
+skinparam rectangle<<dominio>> {
+  BackgroundColor #F9ECE7
+  BorderColor #BF4520
 }
+skinparam rectangle<<grupo>> {
+  BackgroundColor #F5F5F5
+  BorderColor #BFC0C0
+  FontColor #4F5D75
+}
+hide <<dominio>> stereotype
+hide <<grupo>> stereotype
 
-package "composeApp / commonMain" as common {
-  package "ui\n<size:10>telas Compose + ViewModels</size>" as ui #FFFFFF {
+rectangle "<b>androidApp · iosApp · webApp</b>\npontos de entrada (MainActivity, MainViewController, main)" as plat
+
+rectangle "módulo shared · commonMain" as common <<grupo>> {
+  rectangle "<b>ui</b>\nScreens Compose · ViewModels\nXEstado (UiState) · XEvento" as ui
+  rectangle "<b>usecase</b>\num *UseCase por caso de uso\n(papel GRASP Controller)" as uc
+  rectangle "domain" as dom <<dominio>> {
+    rectangle "<b>model</b>\nentidades e valores" as model
+    rectangle "<b>regra</b>\nStrategy · Factory · exceções" as regra
+    rectangle "<b>repositorio</b>\ninterfaces + Transacao" as repo
   }
-  package "application\n<size:10>casos de uso (Controllers GRASP)</size>" as app #FFFFFF {
-  }
-  package "domain" as dom #EEF4FB {
-    package "model\n<size:10>entidades e valores</size>" as model {
-    }
-    package "regra\n<size:10>Strategy, Factory, exceções</size>" as regra {
-    }
-    package "repositorio\n<size:10>interfaces</size>" as repo {
-    }
-  }
-  package "data\n<size:10>Room KMP: entidades, DAOs, repositórios</size>" as data #FFFFFF {
-  }
-  package "di\n<size:10>módulos Koin</size>" as di #FFFFFF {
-  }
+  rectangle "<b>data.memoria</b>\nrepositórios em memória\n(Web e testes)" as mem
+  rectangle "<b>di</b>\nmódulos Koin" as di
+}
+rectangle "módulo shared · mobileMain (Android + iOS)" as mobile <<grupo>> {
+  rectangle "<b>data</b> (Room KMP)\nentities · DAOs · mappers\nRoom*Repository · RoomTransacao" as room
 }
 
 plat -down-> ui
-ui -down-> app
-app -down-> model
-app -down-> regra
-app -down-> repo
+ui -down-> uc
+uc -down-> regra
+uc -down-> repo
+uc -down-> model
 regra -right-> model
 repo -left-> model
-data -up-> repo : implementa
-data -up-> model
-di ..> ui
-di ..> app
-di ..> data
+mem -up-> repo : implementa
+room -up-> repo : implementa
+di .left.> ui : monta
+di .left.> uc
+di .down.> mem
+di .down.> room
 
-note as N1
-  O domínio não depende de nenhuma outra camada
-  nem de framework (sem Room, Compose ou Koin)  [RNF07]
-end note
-note as N2
-  Persistência substituível: trocar Room por outra
-  implementação (ex.: Web) não altera domain/application
-end note
-N1 .. dom
-N2 .. data
+legend right
+  Setas = "depende de". <b>domain</b> (destaque) não depende
+  de nenhuma outra camada nem de framework [RNF07].
+  Persistência substituível: Room no Android/iOS,
+  memória na Web e nos testes, sem mudar domain/usecase.
+endlegend
 @enduml

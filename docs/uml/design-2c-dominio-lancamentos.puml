@@ -1,0 +1,86 @@
+@startuml design-2c-dominio-lancamentos
+!include estilo.iuml
+hide circle
+hide empty members
+hide <<ref>> members
+hide <<ref>> stereotype
+hide <<foco>> stereotype
+title GastoCerto — Design (vista 2c): lançamentos (domain.model)
+
+abstract class Lancamento {
+  + id : String
+  + valor : Dinheiro
+  + data : LocalDate
+  + descricao : String
+  + competencia : MesAno
+  + origemId : String?
+  - situacao : PREVISTO | REALIZADO
+  + confirmar(valorReal : Dinheiro)
+}
+class Gasto {
+  + meio : MeioDePagamento
+  + terceiro : Pessoa?
+  + conversao : ConversaoCambial?
+  + ehDeTerceiro() : Boolean
+}
+class Parcela {
+  + compraId : String
+  + numero : Int
+  + totalDeParcelas : Int
+  + rotulo() : String
+}
+class Receita {
+  + tipo : SALARIO | AVULSA | VENDA_INVESTIMENTO
+}
+class CompraParcelada <<foco>> {
+  + id : String
+  + valorTotal : Dinheiro
+  + quantidade : Int
+  + dataCompra : LocalDate
+  + cartao : CartaoDeCredito
+  + terceiro : Pessoa?
+  + gerarParcelas() : List<Parcela>
+}
+class ConversaoCambial {
+  + valorOriginal : Long
+  + cotacao : Long
+  + emReais() : Dinheiro
+}
+class Reembolso {
+  + id : String
+  + terceiro : Pessoa
+  + valor : Dinheiro
+  + data : LocalDate
+}
+class MeioDePagamento <<ref>>
+class CartaoDeCredito <<ref>>
+class Pessoa <<ref>>
+
+Lancamento <|-- Gasto
+Lancamento <|-- Receita
+Gasto <|-- Parcela
+Gasto "0..*" --> "1" MeioDePagamento : meio
+Gasto "0..*" --> "0..1" Pessoa : terceiro
+Gasto "1" *-- "0..1" ConversaoCambial
+CompraParcelada "1" *-- "2..48" Parcela : cria >
+CompraParcelada --> "1" CartaoDeCredito
+Reembolso --> "1" Pessoa
+
+note right of CompraParcelada
+  <b>Creator + Information Expert</b>: gera N parcelas
+  em competências consecutivas a partir da 1ª (RN01),
+  rotuladas k/N; resto dos centavos na 1ª [RN02].
+  Não tem tabela própria: as parcelas guardam compraId [D5]
+end note
+note bottom of ConversaoCambial
+  valorOriginal em centavos da moeda; cotacao com
+  4 casas; emReais = valor × cotação ÷ 10.000 [RN05 · D1]
+end note
+note bottom of Lancamento
+  origemId: id da recorrência que gerou o PREVISTO;
+  evita duplicar no fechamento do mês [D3]
+end note
+legend left
+  Cinza = detalhada em outra vista (2b)
+endlegend
+@enduml
