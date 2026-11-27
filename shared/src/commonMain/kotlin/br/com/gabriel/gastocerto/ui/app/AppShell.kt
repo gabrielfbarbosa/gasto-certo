@@ -28,9 +28,11 @@ import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
 import androidx.savedstate.serialization.SavedStateConfiguration
 import br.com.gabriel.gastocerto.ui.components.LocalSnackbarHost
-import br.com.gabriel.gastocerto.ui.components.PlaceholderScreen
 import br.com.gabriel.gastocerto.ui.closemonth.CloseMonthScreen
 import br.com.gabriel.gastocerto.ui.expense.RegisterExpenseScreen
+import br.com.gabriel.gastocerto.ui.more.MoreScreen
+import br.com.gabriel.gastocerto.ui.recurrences.RecurrencesScreen
+import br.com.gabriel.gastocerto.ui.registry.RegistryScreen
 import br.com.gabriel.gastocerto.ui.summary.SummaryScreen
 import br.com.gabriel.gastocerto.ui.navigation.Route
 import br.com.gabriel.gastocerto.ui.navigation.tabs
@@ -93,7 +95,9 @@ fun AppShell(viewModel: AppViewModel = koinViewModel()) {
                         entry<Route.Summary> { SummaryScreen() }
                         entry<Route.RegisterExpense> { RegisterExpenseScreen() }
                         entry<Route.CloseMonth> { CloseMonthScreen() }
-                        entry<Route.More> { PlaceholderScreen(stringResource(Res.string.tab_more)) }
+                        entry<Route.More> { MoreScreen(onOpen = { backStack.add(it) }) }
+                        entry<Route.Registry> { RegistryScreen(onBack = { backStack.removeLastOrNull() }) }
+                        entry<Route.Recurrences> { RecurrencesScreen(onBack = { backStack.removeLastOrNull() }) }
                     },
                 )
             }

@@ -37,7 +37,6 @@
     <string name="tab_register">Add</string>
     <string name="tab_close_month">Close month</string>
     <string name="tab_more">More</string>
-    <string name="coming_soon">coming soon</string>
     <string name="demo_data_loaded">Demo data loaded.</string>
     <!-- Register expense (8.20) -->
     <string name="expense_title">New expense</string>
@@ -90,4 +89,47 @@
     <string name="close_month_done">%1$s closed. %2$s opened with %3$s expected entries.</string>
     <string name="close_month_reopened">%1$s reopened for corrections.</string>
     <string name="close_month_confirmed">"%1$s" checked.</string>
+    <!-- Registry and recurrences (8.23) -->
+    <string name="action_add">Add</string>
+    <string name="action_back">Back</string>
+    <string name="role_user">User</string>
+    <string name="role_holder">Household holder</string>
+    <string name="role_third_party">Third party</string>
+    <string name="kind_credit_card">Credit card</string>
+    <string name="kind_checking_account">Checking account</string>
+    <string name="kind_foreign_wallet">Foreign currency wallet</string>
+    <string name="kind_investment">Brokerage</string>
+    <string name="more_registry">Registry</string>
+    <string name="more_registry_detail">People, institutions and payment methods</string>
+    <string name="more_recurrences">Recurring bills and salary</string>
+    <string name="more_recurrences_detail">They generate the expected entries of each month</string>
+    <string name="registry_title">Registry</string>
+    <string name="registry_payment_methods">Payment methods</string>
+    <string name="registry_people">People</string>
+    <string name="registry_institutions">Institutions</string>
+    <string name="registry_kind">Kind</string>
+    <string name="registry_name">Name</string>
+    <string name="registry_holder">Holder</string>
+    <string name="registry_institution">Institution</string>
+    <string name="registry_closing_day">Closing day</string>
+    <string name="registry_due_day">Due day</string>
+    <string name="registry_currency">Currency (e.g. USD)</string>
+    <string name="registry_planned_contribution">Planned monthly contribution (optional)</string>
+    <string name="registry_role">Role</string>
+    <string name="registry_card_days">closes %1$s, due %2$s</string>
+    <string name="registry_deactivate">Deactivate</string>
+    <string name="registry_delete">Delete</string>
+    <string name="registry_saved">"%1$s" saved.</string>
+    <string name="registry_deactivated">"%1$s" deactivated: it keeps its history.</string>
+    <string name="registry_deleted">"%1$s" deleted.</string>
+    <string name="recurrences_title">Recurrences</string>
+    <string name="recurrences_bills">Recurring bills</string>
+    <string name="recurrences_incomes">Salary and recurring income</string>
+    <string name="recurrences_due_day">Due day</string>
+    <string name="recurrences_pay_day">Pay day</string>
+    <string name="recurrences_day_line">%1$s on day %2$s</string>
+    <string name="recurrences_stop">Stop</string>
+    <string name="recurrences_saved">"%1$s" saved.</string>
+    <string name="recurrences_deactivated">"%1$s" will no longer generate expected entries.</string>
+    <string name="registry_delete_confirm">Delete "%1$s"? This cannot be undone.</string>
 </resources>

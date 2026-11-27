@@ -9,8 +9,23 @@ title GastoCerto — Design (vista 5): cadastros e demais casos de uso
 left to right direction
 
 package "ui" {
-  class RegistryViewModel
-  class RecurrencesViewModel
+  class RegistryViewModel {
+    + uiState : StateFlow<RegistryUiState>
+    + events : Flow<RegistryEvent>
+    + addPerson()
+    + addInstitution()
+    + addPaymentMethod()
+    + deactivate(paymentMethod : PaymentMethod)
+    + delete(paymentMethod : PaymentMethod)
+  }
+  class RecurrencesViewModel {
+    + uiState : StateFlow<RecurrencesUiState>
+    + events : Flow<RecurrencesEvent>
+    + addBill()
+    + addIncome()
+    + deactivateBill(bill : RecurringBill)
+    + deactivateIncome(income : RecurringIncome)
+  }
   class InvestmentsViewModel
   class EntriesViewModel
 }
@@ -26,6 +41,8 @@ package "usecase" {
     + deletePaymentMethod(paymentMethod : PaymentMethod)
   }
   class ManageRecurrencesUseCase <<Controller>> {
+    + recurringBills() : List<RecurringBill>
+    + recurringIncomes() : List<RecurringIncome>
     + saveRecurringBill(bill : RecurringBill)
     + saveRecurringIncome(income : RecurringIncome)
   }
@@ -62,6 +79,7 @@ class CloseMonthUseCase <<ref>>
 
 RegistryViewModel --> ManageRegistryUseCase
 RecurrencesViewModel --> ManageRecurrencesUseCase
+RecurrencesViewModel --> ManageRegistryUseCase : meios
 InvestmentsViewModel --> ManageInvestmentsUseCase
 EntriesViewModel --> RegisterOneOffIncomeUseCase
 EntriesViewModel --> CorrectEntryUseCase

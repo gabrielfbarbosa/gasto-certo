@@ -26,6 +26,12 @@ class ManageRecurrencesUseCase(
     private val accountingMonths: AccountingMonthRepository,
     private val today: () -> LocalDate = { Clock.System.todayIn(TimeZone.currentSystemDefault()) },
 ) {
+    /** Active recurring bills, by due day (UC07 list). */
+    suspend fun recurringBills(): List<RecurringBill> = recurrences.activeRecurringBills()
+
+    /** Active recurring incomes (salary), by pay day. */
+    suspend fun recurringIncomes(): List<RecurringIncome> = recurrences.activeRecurringIncomes()
+
     /**
      * Saves the bill. RN06 – when an active bill is registered, the EXPECTED expense is also generated
      * in the **current month** if that month is open and the due date has not passed yet, without

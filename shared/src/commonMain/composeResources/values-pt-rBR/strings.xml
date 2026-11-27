@@ -37,7 +37,6 @@
     <string name="tab_register">Lançar</string>
     <string name="tab_close_month">Fechar mês</string>
     <string name="tab_more">Mais</string>
-    <string name="coming_soon">em breve</string>
     <string name="demo_data_loaded">Dados de demonstração carregados.</string>
     <!-- Lançar gasto (8.20) -->
     <string name="expense_title">Novo gasto</string>
@@ -90,4 +89,47 @@
     <string name="close_month_done">%1$s fechado. %2$s aberto com %3$s previstos.</string>
     <string name="close_month_reopened">%1$s reaberto para correções.</string>
     <string name="close_month_confirmed">"%1$s" conferido.</string>
+    <!-- Cadastros e recorrências (8.23) -->
+    <string name="action_add">Adicionar</string>
+    <string name="action_back">Voltar</string>
+    <string name="role_user">Usuário</string>
+    <string name="role_holder">Titular da casa</string>
+    <string name="role_third_party">Terceiro</string>
+    <string name="kind_credit_card">Cartão de crédito</string>
+    <string name="kind_checking_account">Conta corrente</string>
+    <string name="kind_foreign_wallet">Carteira em moeda estrangeira</string>
+    <string name="kind_investment">Corretora</string>
+    <string name="more_registry">Cadastros</string>
+    <string name="more_registry_detail">Pessoas, instituições e meios de pagamento</string>
+    <string name="more_recurrences">Contas fixas e salário</string>
+    <string name="more_recurrences_detail">Geram os previstos de cada mês</string>
+    <string name="registry_title">Cadastros</string>
+    <string name="registry_payment_methods">Meios de pagamento</string>
+    <string name="registry_people">Pessoas</string>
+    <string name="registry_institutions">Instituições</string>
+    <string name="registry_kind">Tipo</string>
+    <string name="registry_name">Nome</string>
+    <string name="registry_holder">Titular</string>
+    <string name="registry_institution">Instituição</string>
+    <string name="registry_closing_day">Dia de fechamento</string>
+    <string name="registry_due_day">Dia de vencimento</string>
+    <string name="registry_currency">Moeda (ex.: USD)</string>
+    <string name="registry_planned_contribution">Aporte mensal planejado (opcional)</string>
+    <string name="registry_role">Papel</string>
+    <string name="registry_card_days">fecha %1$s, vence %2$s</string>
+    <string name="registry_deactivate">Desativar</string>
+    <string name="registry_delete">Excluir</string>
+    <string name="registry_saved">"%1$s" salvo.</string>
+    <string name="registry_deactivated">"%1$s" desativado: o histórico continua.</string>
+    <string name="registry_deleted">"%1$s" excluído.</string>
+    <string name="recurrences_title">Recorrências</string>
+    <string name="recurrences_bills">Contas fixas</string>
+    <string name="recurrences_incomes">Salário e receitas fixas</string>
+    <string name="recurrences_due_day">Dia de vencimento</string>
+    <string name="recurrences_pay_day">Dia do pagamento</string>
+    <string name="recurrences_day_line">%1$s no dia %2$s</string>
+    <string name="recurrences_stop">Parar</string>
+    <string name="recurrences_saved">"%1$s" salvo.</string>
+    <string name="recurrences_deactivated">"%1$s" não vai mais gerar previstos.</string>
+    <string name="registry_delete_confirm">Excluir "%1$s"? Não dá para desfazer.</string>
 </resources>
