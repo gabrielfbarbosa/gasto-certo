@@ -7,6 +7,8 @@ plugins {
     alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.composeCompiler)
     alias(libs.plugins.kotlinSerialization)
+    alias(libs.plugins.ksp)
+    alias(libs.plugins.androidxRoom)
 }
 
 kotlin {
@@ -59,6 +61,10 @@ kotlin {
         }
         androidMain.get().dependsOn(mobileMain)
         iosMain.get().dependsOn(mobileMain)
+        mobileMain.dependencies {
+            implementation(libs.androidx.room.runtime)
+            implementation(libs.androidx.sqlite.bundled)
+        }
 
         androidMain.dependencies {
             implementation(libs.compose.uiToolingPreview)
@@ -98,6 +104,12 @@ kotlin {
 
 dependencies {
     androidRuntimeClasspath(libs.compose.uiTooling)
+    // Room compiler (KSP) only for the mobile targets: Room does not run on js/wasm.
+    listOf("kspAndroid", "kspIosArm64", "kspIosSimulatorArm64").forEach { add(it, libs.androidx.room.compiler) }
+}
+
+room {
+    schemaDirectory("$projectDir/schemas")
 }
 
 /**
