@@ -12,4 +12,20 @@
     <string name="day_kind_closing">fechamento</string>
     <string name="day_kind_due">vencimento</string>
     <string name="day_kind_pay">recebimento</string>
+    <!-- Dados de demonstração (8.18) -->
+    <string name="demo_user">Gabriel</string>
+    <string name="demo_spouse">Esposa</string>
+    <string name="demo_father">Pai</string>
+    <string name="demo_spouse_card">Nubank (esposa)</string>
+    <string name="demo_power">Conta de luz</string>
+    <string name="demo_water">Conta de água</string>
+    <string name="demo_internet">Internet</string>
+    <string name="demo_salary">Salário</string>
+    <string name="demo_groceries">Mercado</string>
+    <string name="demo_pharmacy">Farmácia</string>
+    <string name="demo_restaurant">Restaurante</string>
+    <string name="demo_clothes">Roupas</string>
+    <string name="demo_app_subscription">Assinatura de app</string>
+    <string name="demo_television">Televisão</string>
+    <string name="demo_notebook">Notebook</string>
 </resources>

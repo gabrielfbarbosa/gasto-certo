@@ -42,6 +42,9 @@ package "usecase" {
     + receivableBalance(thirdParty : Person) : ReceivableBalance
     + execute(thirdParty : Person, amount : Money, date : LocalDate) : Reimbursement
   }
+  class SeedDemoDataUseCase {
+    + execute(labels : DemoLabels) : Boolean
+  }
 }
 package "domain (vistas 3 e 4b)" {
   class RegistryRepository <<ref>>
@@ -74,6 +77,9 @@ CorrectEntryUseCase --> EntryRepository
 CorrectEntryUseCase --> AccountingMonthRepository
 RegisterReimbursementUseCase --> EntryRepository
 RegisterReimbursementUseCase --> ReimbursementRepository
+SeedDemoDataUseCase ..> ManageRegistryUseCase : usa
+SeedDemoDataUseCase ..> ManageRecurrencesUseCase : usa
+SeedDemoDataUseCase ..> RegisterReimbursementUseCase : usa
 
 legend right
   ManageRecurrencesUseCase usa a Factory para gerar o
@@ -81,5 +87,8 @@ legend right
   ManageRegistryUseCase só exclui meio sem lançamentos;
   com lançamentos, só desativa [RN09]. CorrectEntryUseCase
   respeita mês fechado [RN08]. Reembolso ≤ saldo [RN03].
+  SeedDemoDataUseCase carrega a demo na 1ª execução só pelos
+  use cases (também registra gastos e compras parceladas);
+  é idempotente: não faz nada se já houver pessoas.
 endlegend
 @enduml

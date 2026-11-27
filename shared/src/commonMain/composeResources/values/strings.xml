@@ -12,4 +12,20 @@
     <string name="day_kind_closing">closing</string>
     <string name="day_kind_due">due</string>
     <string name="day_kind_pay">pay</string>
+    <!-- Demo data (8.18) -->
+    <string name="demo_user">Gabriel</string>
+    <string name="demo_spouse">Wife</string>
+    <string name="demo_father">Father</string>
+    <string name="demo_spouse_card">Nubank (wife)</string>
+    <string name="demo_power">Power bill</string>
+    <string name="demo_water">Water bill</string>
+    <string name="demo_internet">Internet</string>
+    <string name="demo_salary">Salary</string>
+    <string name="demo_groceries">Groceries</string>
+    <string name="demo_pharmacy">Pharmacy</string>
+    <string name="demo_restaurant">Restaurant</string>
+    <string name="demo_clothes">Clothes</string>
+    <string name="demo_app_subscription">App subscription</string>
+    <string name="demo_television">Television</string>
+    <string name="demo_notebook">Notebook</string>
 </resources>

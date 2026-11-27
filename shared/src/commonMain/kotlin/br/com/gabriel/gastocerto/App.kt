@@ -18,6 +18,9 @@ import org.jetbrains.compose.resources.painterResource
 import br.com.gabriel.gastocerto.di.appModule
 import br.com.gabriel.gastocerto.di.platformModule
 import org.koin.compose.KoinApplication
+import org.koin.compose.koinInject
+import br.com.gabriel.gastocerto.ui.demoLabels
+import br.com.gabriel.gastocerto.usecase.SeedDemoDataUseCase
 import org.koin.dsl.koinConfiguration
 
 import gastocerto.shared.generated.resources.Res
@@ -34,6 +37,9 @@ fun App() {
 
 @Composable
 private fun AppContent() {
+    // 8.18: demo data on the first run (idempotent). Moves to the root ViewModel with the UI (8.19).
+    val seed = koinInject<SeedDemoDataUseCase>()
+    LaunchedEffect(Unit) { seed.execute(demoLabels()) }
     MaterialTheme {
         var showContent by remember { mutableStateOf(false) }
         Column(

@@ -13,6 +13,7 @@ import br.com.gabriel.gastocerto.usecase.RegisterInstallmentPurchaseUseCase
 import br.com.gabriel.gastocerto.usecase.RegisterOneOffIncomeUseCase
 import br.com.gabriel.gastocerto.usecase.RegisterReimbursementUseCase
 import br.com.gabriel.gastocerto.usecase.ReopenMonthUseCase
+import br.com.gabriel.gastocerto.usecase.SeedDemoDataUseCase
 import org.koin.core.module.dsl.factoryOf
 import org.koin.dsl.module
 
@@ -36,4 +37,5 @@ val appModule = module {
     factoryOf(::RegisterOneOffIncomeUseCase)
     factoryOf(::CorrectEntryUseCase)
     factoryOf(::RegisterReimbursementUseCase)
+    factory { SeedDemoDataUseCase(get(), get(), get(), get(), get(), get(), get()) }
 }
