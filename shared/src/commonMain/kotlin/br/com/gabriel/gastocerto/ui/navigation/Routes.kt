@@ -3,6 +3,12 @@ package br.com.gabriel.gastocerto.ui.navigation
 import androidx.navigation3.runtime.NavKey
 import br.com.gabriel.gastocerto.ui.more.MoreItem
 import gastocerto.shared.generated.resources.Res
+import gastocerto.shared.generated.resources.more_entries
+import gastocerto.shared.generated.resources.more_entries_detail
+import gastocerto.shared.generated.resources.more_investments
+import gastocerto.shared.generated.resources.more_investments_detail
+import gastocerto.shared.generated.resources.more_reimbursement
+import gastocerto.shared.generated.resources.more_reimbursement_detail
 import gastocerto.shared.generated.resources.more_recurrences
 import gastocerto.shared.generated.resources.more_recurrences_detail
 import gastocerto.shared.generated.resources.more_registry
@@ -24,6 +30,9 @@ sealed interface Route : NavKey {
     /** Screens opened from "More". */
     @Serializable data object Registry : Route
     @Serializable data object Recurrences : Route
+    @Serializable data object Entries : Route
+    @Serializable data object Investments : Route
+    @Serializable data object Reimbursement : Route
 }
 
 /** The tabs of the bottom bar, in order. */
@@ -33,4 +42,7 @@ val tabs: List<Route> = listOf(Route.Summary, Route.RegisterExpense, Route.Close
 val moreItems: List<MoreItem> = listOf(
     MoreItem(Route.Registry, Res.string.more_registry, Res.string.more_registry_detail),
     MoreItem(Route.Recurrences, Res.string.more_recurrences, Res.string.more_recurrences_detail),
+    MoreItem(Route.Entries, Res.string.more_entries, Res.string.more_entries_detail),
+    MoreItem(Route.Investments, Res.string.more_investments, Res.string.more_investments_detail),
+    MoreItem(Route.Reimbursement, Res.string.more_reimbursement, Res.string.more_reimbursement_detail),
 )

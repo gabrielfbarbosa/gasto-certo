@@ -49,7 +49,11 @@ data class RegistryUiState(
     val personRole: Role = Role.THIRD_PARTY,
     val institutionName: String = "",
     val form: PaymentMethodForm = PaymentMethodForm(),
-    val error: RuleViolationException? = null,
+    val error: RuleViolationException? = null,    /**
+     * Bumped on every reload. Domain entities compare by `id` (D2) and `StateFlow` skips a value equal to the
+     * current one, so without it a reload where only a field changed (amount, contribution…) would not reach the screen.
+     */
+    val revision: Int = 0,
 ) {
     /** RN10 – a payment method is held by the user or a household holder, never a third party. */
     val holders: List<Person> get() = people.filter { it.role != Role.THIRD_PARTY }
@@ -136,8 +140,9 @@ class RegistryViewModel(private val registry: ManageRegistryUseCase) : ViewModel
     private fun act(action: suspend () -> RegistryEvent) {
         viewModelScope.launch {
             try {
-                _events.send(action())
+                val event = action()
                 reload()
+                _events.send(event)
             } catch (error: RuleViolationException) {
                 _uiState.update { it.copy(error = error) }
             }
@@ -150,7 +155,7 @@ class RegistryViewModel(private val registry: ManageRegistryUseCase) : ViewModel
         val methods = registry.activePaymentMethods()
         _uiState.update { state ->
             state.copy(
-                people = people, institutions = institutions, paymentMethods = methods,
+                people = people, institutions = institutions, paymentMethods = methods, revision = state.revision + 1,
                 form = state.form.copy(
                     holder = state.form.holder?.takeIf { it in people } ?: people.firstOrNull { it.role == Role.USER },
                     institution = state.form.institution?.takeIf { it in institutions } ?: institutions.firstOrNull(),

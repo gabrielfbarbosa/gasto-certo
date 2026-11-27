@@ -132,4 +132,33 @@
     <string name="recurrences_saved">"%1$s" salvo.</string>
     <string name="recurrences_deactivated">"%1$s" não vai mais gerar previstos.</string>
     <string name="registry_delete_confirm">Excluir "%1$s"? Não dá para desfazer.</string>
+    <!-- Lançamentos, investimentos, reembolsos (8.24) -->
+    <string name="more_entries">Lançamentos e receita avulsa</string>
+    <string name="more_entries_detail">Conferir, corrigir ou excluir; lançar receita extra</string>
+    <string name="more_investments">Investimentos</string>
+    <string name="more_investments_detail">Aporte planejado e vendas</string>
+    <string name="more_reimbursement">Reembolsos</string>
+    <string name="more_reimbursement_detail">Quanto os terceiros devem e já pagaram</string>
+    <string name="entries_title">Lançamentos</string>
+    <string name="entries_new_income">Lançar receita avulsa</string>
+    <string name="entries_list">Lançamentos do mês</string>
+    <string name="entries_empty">Nenhum lançamento neste mês.</string>
+    <string name="entries_expected">previsto</string>
+    <string name="entries_edit">Corrigir lançamento</string>
+    <string name="entries_income_saved">Receita lançada em %1$s.</string>
+    <string name="entries_corrected">"%1$s" corrigido.</string>
+    <string name="entries_deleted">"%1$s" excluído.</string>
+    <string name="investments_title">Investimentos</string>
+    <string name="investments_empty">Nenhuma corretora cadastrada (Mais › Cadastros).</string>
+    <string name="investments_contribution">Aporte planejado: %1$s por mês</string>
+    <string name="investments_no_contribution">Sem aporte planejado</string>
+    <string name="investments_set_contribution">Aporte</string>
+    <string name="investments_sale">Registrar venda</string>
+    <string name="investments_contribution_set">Aporte planejado de %1$s atualizado.</string>
+    <string name="investments_sale_saved">Venda de %1$s lançada como receita em %2$s.</string>
+    <string name="reimbursement_title">Reembolsos</string>
+    <string name="reimbursement_balances">A receber</string>
+    <string name="reimbursement_third_party">Terceiro</string>
+    <string name="reimbursement_register">Registrar reembolso</string>
+    <string name="reimbursement_saved">Reembolso de %1$s registrado. Ainda deve %2$s.</string>
 </resources>

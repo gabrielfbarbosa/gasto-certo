@@ -16,7 +16,10 @@ import br.com.gabriel.gastocerto.usecase.ReopenMonthUseCase
 import br.com.gabriel.gastocerto.usecase.SeedDemoDataUseCase
 import br.com.gabriel.gastocerto.ui.app.AppViewModel
 import br.com.gabriel.gastocerto.ui.closemonth.CloseMonthViewModel
+import br.com.gabriel.gastocerto.ui.entries.EntriesViewModel
 import br.com.gabriel.gastocerto.ui.expense.RegisterExpenseViewModel
+import br.com.gabriel.gastocerto.ui.investments.InvestmentsViewModel
+import br.com.gabriel.gastocerto.ui.reimbursement.ReimbursementViewModel
 import br.com.gabriel.gastocerto.ui.recurrences.RecurrencesViewModel
 import br.com.gabriel.gastocerto.ui.registry.RegistryViewModel
 import br.com.gabriel.gastocerto.ui.summary.SummaryViewModel
@@ -54,4 +57,7 @@ val appModule = module {
     viewModel { CloseMonthViewModel(get(), get(), get(), get()) }
     viewModelOf(::RegistryViewModel)
     viewModelOf(::RecurrencesViewModel)
+    viewModel { EntriesViewModel(get(), get()) }
+    viewModel { InvestmentsViewModel(get(), get()) }
+    viewModel { ReimbursementViewModel(get(), get()) }
 }

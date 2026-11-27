@@ -132,4 +132,33 @@
     <string name="recurrences_saved">"%1$s" saved.</string>
     <string name="recurrences_deactivated">"%1$s" will no longer generate expected entries.</string>
     <string name="registry_delete_confirm">Delete "%1$s"? This cannot be undone.</string>
+    <!-- Entries, investments, reimbursements (8.24) -->
+    <string name="more_entries">Entries and one-off income</string>
+    <string name="more_entries_detail">Check, correct or delete; register extra income</string>
+    <string name="more_investments">Investments</string>
+    <string name="more_investments_detail">Planned contribution and sales</string>
+    <string name="more_reimbursement">Reimbursements</string>
+    <string name="more_reimbursement_detail">What third parties owe and paid back</string>
+    <string name="entries_title">Entries</string>
+    <string name="entries_new_income">Register one-off income</string>
+    <string name="entries_list">Entries of the month</string>
+    <string name="entries_empty">No entries in this month.</string>
+    <string name="entries_expected">expected</string>
+    <string name="entries_edit">Correct entry</string>
+    <string name="entries_income_saved">Income saved in %1$s.</string>
+    <string name="entries_corrected">"%1$s" corrected.</string>
+    <string name="entries_deleted">"%1$s" deleted.</string>
+    <string name="investments_title">Investments</string>
+    <string name="investments_empty">No brokerage registered (More › Registry).</string>
+    <string name="investments_contribution">Planned contribution: %1$s per month</string>
+    <string name="investments_no_contribution">No planned contribution</string>
+    <string name="investments_set_contribution">Contribution</string>
+    <string name="investments_sale">Register sale</string>
+    <string name="investments_contribution_set">Planned contribution of %1$s updated.</string>
+    <string name="investments_sale_saved">Sale of %1$s saved as income in %2$s.</string>
+    <string name="reimbursement_title">Reimbursements</string>
+    <string name="reimbursement_balances">To receive</string>
+    <string name="reimbursement_third_party">Third party</string>
+    <string name="reimbursement_register">Register reimbursement</string>
+    <string name="reimbursement_saved">Reimbursement from %1$s saved. Still owes %2$s.</string>
 </resources>

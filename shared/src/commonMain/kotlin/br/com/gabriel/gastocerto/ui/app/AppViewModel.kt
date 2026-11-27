@@ -27,7 +27,8 @@ sealed interface AppEvent {
  * Root ViewModel and **reference for the MVVM + UDF pattern** used by every screen:
  * - [uiState]: one immutable [AppUiState] exposed as `StateFlow` — everything the screen draws;
  * - [events]: one-off [AppEvent]s (snackbar, navigation) through a `Channel`, never kept as state;
- * - actions are public methods; use cases run in `viewModelScope`.
+ * - actions are public methods; use cases run in `viewModelScope`;
+ * - the state is updated **before** the event is sent, so whoever reacts to the event sees the new state.
  *
  * On start it runs the demo seed (8.18), which does nothing when the database already has data.
  */
@@ -43,8 +44,9 @@ class AppViewModel(
 
     init {
         viewModelScope.launch {
-            if (seed.execute(labels())) _events.send(AppEvent.DemoDataLoaded)
+            val seeded = seed.execute(labels())
             _uiState.update { it.copy(ready = true) }
+            if (seeded) _events.send(AppEvent.DemoDataLoaded)
         }
     }
 }

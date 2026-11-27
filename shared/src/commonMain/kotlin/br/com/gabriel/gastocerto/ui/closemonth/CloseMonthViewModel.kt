@@ -33,7 +33,11 @@ data class CloseMonthUiState(
     /** EXPECTED entries of the month still to be checked (RN06, RN07, RN11). */
     val expected: List<Entry> = emptyList(),
     val error: RuleViolationException? = null,
-    val busy: Boolean = true,
+    val busy: Boolean = true,    /**
+     * Bumped on every reload. Domain entities compare by `id` (D2) and `StateFlow` skips a value equal to the
+     * current one, so without it a reload where only a field changed (amount, contribution…) would not reach the screen.
+     */
+    val revision: Int = 0,
 ) {
     val isClosed: Boolean get() = status == AccountingMonthStatus.CLOSED
 }
@@ -100,8 +104,9 @@ class CloseMonthViewModel(
         _uiState.update { it.copy(busy = true, error = null) }
         viewModelScope.launch {
             try {
-                _events.send(action(month))
+                val event = action(month)
                 refresh(month)
+                _events.send(event)
             } catch (error: RuleViolationException) {
                 _uiState.update { it.copy(busy = false, error = error) }
                 refresh(month, keepError = true)
@@ -117,6 +122,7 @@ class CloseMonthViewModel(
             if (it.month != month) it
             else it.copy(
                 status = accountingMonth.status, summary = summary, expected = expected, busy = false,
+                revision = it.revision + 1,
                 error = if (keepError) it.error else null,
             )
         }

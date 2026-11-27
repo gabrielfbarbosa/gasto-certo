@@ -26,8 +26,20 @@ package "ui" {
     + deactivateBill(bill : RecurringBill)
     + deactivateIncome(income : RecurringIncome)
   }
-  class InvestmentsViewModel
-  class EntriesViewModel
+  class InvestmentsViewModel {
+    + setPlannedContribution(account : InvestmentAccount, amount : Long?)
+    + registerSale(account : InvestmentAccount, amount : Long?)
+  }
+  class EntriesViewModel {
+    + load(month : MonthYear)
+    + registerIncome()
+    + edit(entry : Entry, amount : Long?, description : String)
+    + confirmExpected(entry : Entry, actualAmount : Long?)
+    + delete(entry : Entry)
+  }
+  class ReimbursementViewModel {
+    + register()
+  }
 }
 package "usecase" {
   class ManageRegistryUseCase <<Controller>> {
@@ -83,7 +95,8 @@ RecurrencesViewModel --> ManageRegistryUseCase : meios
 InvestmentsViewModel --> ManageInvestmentsUseCase
 EntriesViewModel --> RegisterOneOffIncomeUseCase
 EntriesViewModel --> CorrectEntryUseCase
-EntriesViewModel --> RegisterReimbursementUseCase
+ReimbursementViewModel --> RegisterReimbursementUseCase
+InvestmentsViewModel --> ManageRegistryUseCase : corretoras
 ManageRegistryUseCase --> RegistryRepository
 ManageRecurrencesUseCase --> RecurrenceRepository
 ManageRecurrencesUseCase --> EntryFactory
@@ -111,6 +124,8 @@ legend right
   ManageRegistryUseCase só exclui meio sem lançamentos;
   com lançamentos, só desativa [RN09]. CorrectEntryUseCase
   respeita mês fechado [RN08]. Reembolso ≤ saldo [RN03].
+  Todo XViewModel expõe uiState (StateFlow) e events (Flow) e
+  atualiza o estado antes de emitir o evento.
   SeedDemoDataUseCase carrega a demo na 1ª execução só pelos
   use cases (também registra gastos e compras parceladas e
   fecha o mês anterior, gerando os previstos do mês atual);

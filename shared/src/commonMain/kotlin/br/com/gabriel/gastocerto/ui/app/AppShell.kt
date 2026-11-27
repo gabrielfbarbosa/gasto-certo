@@ -29,7 +29,10 @@ import androidx.navigation3.ui.NavDisplay
 import androidx.savedstate.serialization.SavedStateConfiguration
 import br.com.gabriel.gastocerto.ui.components.LocalSnackbarHost
 import br.com.gabriel.gastocerto.ui.closemonth.CloseMonthScreen
+import br.com.gabriel.gastocerto.ui.entries.EntriesScreen
 import br.com.gabriel.gastocerto.ui.expense.RegisterExpenseScreen
+import br.com.gabriel.gastocerto.ui.investments.InvestmentsScreen
+import br.com.gabriel.gastocerto.ui.reimbursement.ReimbursementScreen
 import br.com.gabriel.gastocerto.ui.more.MoreScreen
 import br.com.gabriel.gastocerto.ui.recurrences.RecurrencesScreen
 import br.com.gabriel.gastocerto.ui.registry.RegistryScreen
@@ -98,6 +101,9 @@ fun AppShell(viewModel: AppViewModel = koinViewModel()) {
                         entry<Route.More> { MoreScreen(onOpen = { backStack.add(it) }) }
                         entry<Route.Registry> { RegistryScreen(onBack = { backStack.removeLastOrNull() }) }
                         entry<Route.Recurrences> { RecurrencesScreen(onBack = { backStack.removeLastOrNull() }) }
+                        entry<Route.Entries> { EntriesScreen(onBack = { backStack.removeLastOrNull() }) }
+                        entry<Route.Investments> { InvestmentsScreen(onBack = { backStack.removeLastOrNull() }) }
+                        entry<Route.Reimbursement> { ReimbursementScreen(onBack = { backStack.removeLastOrNull() }) }
                     },
                 )
             }

@@ -47,7 +47,11 @@ data class RegisterExpenseUiState(
     /** UC02 – the installments shown before confirming (`k/N – amount – statement`). */
     val preview: List<Installment> = emptyList(),
     val error: RuleViolationException? = null,
-    val saving: Boolean = false,
+    val saving: Boolean = false,    /**
+     * Bumped on every reload. Domain entities compare by `id` (D2) and `StateFlow` skips a value equal to the
+     * current one, so without it a reload where only a field changed (amount, contribution…) would not reach the screen.
+     */
+    val revision: Int = 0,
 ) {
     val isForeignCurrency: Boolean get() = paymentMethod is ForeignCurrencyWallet
     val isCreditCard: Boolean get() = paymentMethod is CreditCard
@@ -101,6 +105,7 @@ class RegisterExpenseViewModel(
         _uiState.update { state ->
             state.copy(
                 paymentMethods = methods,
+                revision = state.revision + 1,
                 thirdParties = thirdParties,
                 paymentMethod = state.paymentMethod?.takeIf { it in methods }
                     ?: methods.firstOrNull { it is CreditCard } ?: methods.firstOrNull(),
@@ -142,8 +147,8 @@ class RegisterExpenseViewModel(
         viewModelScope.launch {
             try {
                 val event = save(_uiState.value)
-                _events.send(event)
                 clearForm()
+                _events.send(event)
             } catch (closed: AccountingMonthClosed) {
                 _uiState.update { it.copy(saving = false) }
                 _events.send(RegisterExpenseEvent.OfferReopen(closed.month))
