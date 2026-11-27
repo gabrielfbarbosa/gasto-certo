@@ -24,7 +24,7 @@ class MesAno <<value>> {
 }
 class Competencia <<foco>> {
   + mesAno : MesAno
-  - situacao : ABERTA | FECHADA
+  + situacao : ABERTA | FECHADA {readOnly}
   + fechar()
   + reabrir()
   + garantirAberta()

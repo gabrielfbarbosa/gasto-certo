@@ -79,7 +79,7 @@ class CarteiraMoedaEstrangeira(
 
 /**
  * Conta em corretora (RN11). O [aportePlanejadoMensal], se informado, precisa ser maior que zero
- * e gera o aporte PREVISTO de cada mês (`gerarAportePrevisto`, sub-etapa 8.8). Competência = mês do gasto.
+ * e gera o aporte PREVISTO de cada mês ([gerarAportePrevisto]). Competência = mês do gasto.
  */
 class ContaInvestimento(
     nome: String,
@@ -97,4 +97,20 @@ class ContaInvestimento(
     }
 
     override fun politicaDeCompetencia(): PoliticaDeCompetencia = CompetenciaPorDataDoGasto()
+
+    /**
+     * RN11 – aporte PREVISTO do [mes] (um gasto nesta corretora), no dia 1, com `origemId` = [id] (D3).
+     * Devolve `null` se não houver aporte planejado. O valor é ajustado ao confirmar.
+     */
+    fun gerarAportePrevisto(mes: MesAno): Gasto? = aportePlanejadoMensal?.let { valor ->
+        Gasto(
+            valor = valor,
+            data = mes.dia(1),
+            descricao = "Aporte planejado – $nome",
+            competencia = mes,
+            meio = this,
+            situacao = SituacaoDoLancamento.PREVISTO,
+            origemId = id,
+        )
+    }
 }

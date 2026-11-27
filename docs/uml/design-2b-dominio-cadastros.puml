@@ -42,6 +42,7 @@ class ContaFixa {
   + valorPrevisto : Dinheiro
   + diaVencimento : Int
   + meio : MeioDePagamento
+  + ativa : Boolean
   + gerarPrevisto(mes : MesAno) : Gasto
 }
 class ReceitaRecorrente {
@@ -49,6 +50,7 @@ class ReceitaRecorrente {
   + descricao : String
   + valor : Dinheiro
   + diaRecebimento : Int
+  + ativa : Boolean
   + gerarPrevista(mes : MesAno) : Receita
 }
 class Gasto <<ref>>
