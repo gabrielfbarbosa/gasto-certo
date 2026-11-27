@@ -25,6 +25,8 @@ class CompraParcelada(
     init {
         if (!valorTotal.ehPositivo()) throw ValorInvalido(valorTotal)
         if (quantidade !in LIMITE_DE_PARCELAS) throw ParcelasForaDoLimite(quantidade)
+        // RN09 – cada parcela precisa ter ao menos 1 centavo (ex.: R$ 0,01 em 2x é inválido)
+        if (valorTotal.centavos < quantidade) throw ValorInvalido(Dinheiro(valorTotal.centavos / quantidade))
     }
 
     /**
