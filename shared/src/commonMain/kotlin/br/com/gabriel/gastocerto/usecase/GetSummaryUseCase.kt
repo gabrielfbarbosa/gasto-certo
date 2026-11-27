@@ -20,14 +20,14 @@ class GetSummaryUseCase(private val entries: EntryRepository) {
     suspend fun ofMonth(month: MonthYear, holder: Person? = null): PeriodSummary =
         PeriodSummary.of(entries.ofMonth(month), holder)
 
-    /** RF15 – the week (**Monday to Sunday**) that contains [date], by entry date. */
-    suspend fun ofWeek(date: LocalDate): PeriodSummary {
+    /** RF15 – the week (**Monday to Sunday**) that contains [date], by entry date; optional [holder] filter (RN10). */
+    suspend fun ofWeek(date: LocalDate, holder: Person? = null): PeriodSummary {
         val monday = date.minus(date.dayOfWeek.isoDayNumber - 1, DateTimeUnit.DAY)
         val sunday = monday.plus(6, DateTimeUnit.DAY)
-        return PeriodSummary.of(entries.ofPeriod(monday, sunday))
+        return PeriodSummary.of(entries.ofPeriod(monday, sunday), holder)
     }
 
-    /** RF15 – the calendar [year] (January 1 to December 31), by entry date. */
-    suspend fun ofYear(year: Int): PeriodSummary =
-        PeriodSummary.of(entries.ofPeriod(LocalDate(year, 1, 1), LocalDate(year, 12, 31)))
+    /** RF15 – the calendar [year] (January 1 to December 31), by entry date; optional [holder] filter (RN10). */
+    suspend fun ofYear(year: Int, holder: Person? = null): PeriodSummary =
+        PeriodSummary.of(entries.ofPeriod(LocalDate(year, 1, 1), LocalDate(year, 12, 31)), holder)
 }

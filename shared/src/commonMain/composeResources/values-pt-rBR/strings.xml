@@ -61,4 +61,19 @@
     <string name="expense_reopen_text">%1$s está fechado. Reabrir e lançar este gasto?</string>
     <string name="expense_reopen_confirm">Reabrir e lançar</string>
     <string name="expense_no_payment_methods">Cadastre um meio de pagamento primeiro (Mais › Cadastros).</string>
+    <!-- Resumo (8.21) -->
+    <string name="summary_title">Resumo</string>
+    <string name="summary_month">Mês</string>
+    <string name="summary_week">Semana</string>
+    <string name="summary_year">Ano</string>
+    <string name="summary_all_holders">Casa toda</string>
+    <string name="summary_surplus">Sobra</string>
+    <string name="summary_income">Receitas</string>
+    <string name="summary_expenses">Gastos</string>
+    <string name="summary_third_party">Em nome de terceiros</string>
+    <string name="summary_by_payment_method">Por meio de pagamento</string>
+    <string name="summary_by_holder">Por titular</string>
+    <string name="summary_receivables">A receber</string>
+    <string name="summary_statements">Faturas dos cartões</string>
+    <string name="summary_statement_due">Fecha %1$s · vence %2$s</string>
 </resources>

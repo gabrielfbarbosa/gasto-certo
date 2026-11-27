@@ -61,4 +61,19 @@
     <string name="expense_reopen_text">%1$s is closed. Reopen it and save this expense?</string>
     <string name="expense_reopen_confirm">Reopen and save</string>
     <string name="expense_no_payment_methods">Register a payment method first (More › Registry).</string>
+    <!-- Summary (8.21) -->
+    <string name="summary_title">Summary</string>
+    <string name="summary_month">Month</string>
+    <string name="summary_week">Week</string>
+    <string name="summary_year">Year</string>
+    <string name="summary_all_holders">Household</string>
+    <string name="summary_surplus">Surplus</string>
+    <string name="summary_income">Income</string>
+    <string name="summary_expenses">Expenses</string>
+    <string name="summary_third_party">On behalf of third parties</string>
+    <string name="summary_by_payment_method">By payment method</string>
+    <string name="summary_by_holder">By holder</string>
+    <string name="summary_receivables">To receive</string>
+    <string name="summary_statements">Card statements</string>
+    <string name="summary_statement_due">Closes %1$s · due %2$s</string>
 </resources>

@@ -57,6 +57,7 @@ package "domain (vistas 3 e 4b)" {
   class ReimbursementRepository <<ref>>
   class EntryFactory <<ref>>
 }
+class CloseMonthUseCase <<ref>>
 
 RegistryViewModel --> ManageRegistryUseCase
 RecurrencesViewModel --> ManageRecurrencesUseCase
@@ -83,6 +84,7 @@ RegisterReimbursementUseCase --> ReimbursementRepository
 SeedDemoDataUseCase ..> ManageRegistryUseCase : usa
 SeedDemoDataUseCase ..> ManageRecurrencesUseCase : usa
 SeedDemoDataUseCase ..> RegisterReimbursementUseCase : usa
+SeedDemoDataUseCase ..> CloseMonthUseCase : fecha o mês anterior
 
 legend right
   ManageRecurrencesUseCase usa a Factory para gerar o
@@ -91,7 +93,8 @@ legend right
   com lançamentos, só desativa [RN09]. CorrectEntryUseCase
   respeita mês fechado [RN08]. Reembolso ≤ saldo [RN03].
   SeedDemoDataUseCase carrega a demo na 1ª execução só pelos
-  use cases (também registra gastos e compras parceladas);
+  use cases (também registra gastos e compras parceladas e
+  fecha o mês anterior, gerando os previstos do mês atual);
   é idempotente: não faz nada se já houver pessoas.
 endlegend
 @enduml

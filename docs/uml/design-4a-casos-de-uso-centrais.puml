@@ -30,9 +30,11 @@ package "ui" {
     + uiState : StateFlow<SummaryUiState>
     + selectPeriod(period : Period)
     + filterHolder(holder : Person?)
+    + refresh()
   }
 }
 package "usecase" {
+  class RegisterReimbursementUseCase <<ref>>
   class RegisterExpenseUseCase <<Controller>> {
     + execute(input : ExpenseInput) : Expense
   }
@@ -49,8 +51,8 @@ package "usecase" {
   }
   class GetSummaryUseCase <<Controller>> {
     + ofMonth(month : MonthYear, holder : Person?) : PeriodSummary
-    + ofWeek(date : LocalDate) : PeriodSummary
-    + ofYear(year : Int) : PeriodSummary
+    + ofWeek(date : LocalDate, holder : Person?) : PeriodSummary
+    + ofYear(year : Int, holder : Person?) : PeriodSummary
   }
   class GetStatementUseCase <<Controller>> {
     + execute(card : CreditCard, month : MonthYear) : Statement
@@ -68,6 +70,7 @@ CloseMonthViewModel --> CloseMonthUseCase
 CloseMonthViewModel --> ReopenMonthUseCase
 SummaryViewModel --> GetSummaryUseCase
 SummaryViewModel --> GetStatementUseCase
+SummaryViewModel --> RegisterReimbursementUseCase : saldo a receber
 
 legend right
   <b>MVVM + fluxo unidirecional</b>: a tela desenha só o XUiState

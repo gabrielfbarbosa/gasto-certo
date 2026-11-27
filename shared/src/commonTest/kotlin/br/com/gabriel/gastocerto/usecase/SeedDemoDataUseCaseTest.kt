@@ -7,7 +7,10 @@ import br.com.gabriel.gastocerto.data.memory.InMemoryRecurrenceRepository
 import br.com.gabriel.gastocerto.data.memory.InMemoryRegistryRepository
 import br.com.gabriel.gastocerto.data.memory.InMemoryReimbursementRepository
 import br.com.gabriel.gastocerto.data.memory.InMemoryTransaction
+import br.com.gabriel.gastocerto.domain.model.AccountingMonthStatus
+import br.com.gabriel.gastocerto.domain.model.EntryStatus
 import br.com.gabriel.gastocerto.domain.model.Installment
+import br.com.gabriel.gastocerto.domain.model.MonthYear
 import br.com.gabriel.gastocerto.domain.model.Money
 import br.com.gabriel.gastocerto.domain.model.Role
 import br.com.gabriel.gastocerto.domain.repository.Repositories
@@ -36,6 +39,7 @@ fun Repositories.seedUseCase(today: LocalDate): SeedDemoDataUseCase {
         registerExpense = RegisterExpenseUseCase(factory, accountingMonths, entries),
         registerPurchase = RegisterInstallmentPurchaseUseCase(factory, accountingMonths, entries),
         registerReimbursement = RegisterReimbursementUseCase(entries, reimbursements),
+        closeMonth = CloseMonthUseCase(transaction, accountingMonths, recurrences, factory, entries),
         today = { today },
     )
 }
@@ -53,6 +57,11 @@ suspend fun Repositories.assertDemoData() {
     // RN03: pharmacy + 3 notebook installments on behalf of the father, and one reimbursement.
     assertEquals(4, entries.ofThirdParty(father).size)
     assertEquals(1, reimbursements.ofThirdParty(father).size)
+    // UC03: the previous month is closed and this month has the expected salary, 3 bills and the contribution.
+    val november = MonthYear(2026, 11)
+    assertEquals(AccountingMonthStatus.CLOSED, accountingMonths.findOrCreate(november.previous()).status)
+    val expected = entries.ofMonth(november).filter { it.status == EntryStatus.EXPECTED }
+    assertEquals(setOf("Salary", "Power", "Water", "Internet", "Planned contribution – Clear"), expected.map { it.description }.toSet())
     // RN02: TV in 6 installments over the year.
     val year = entries.ofPeriod(LocalDate(2026, 1, 1), LocalDate(2027, 12, 31))
     assertEquals(6, year.filterIsInstance<Installment>().count { it.description == "TV" })

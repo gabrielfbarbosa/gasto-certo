@@ -49,6 +49,7 @@ data class DemoLabels(
  * bills, salary, expenses on behalf of the father (`[PAI]`, RN03), installment purchases (RN02), a dollar
  * expense (RN05) and a reimbursement. Everything goes **through the use cases**, so every rule applies.
  *
+ * The previous month is closed through UC03, so the current month starts with its expected entries.
  * Idempotent: when the registry already has people, nothing is done. Dates are relative to [today],
  * so the current month always has data.
  */
@@ -60,6 +61,7 @@ class SeedDemoDataUseCase(
     private val registerExpense: RegisterExpenseUseCase,
     private val registerPurchase: RegisterInstallmentPurchaseUseCase,
     private val registerReimbursement: RegisterReimbursementUseCase,
+    private val closeMonth: CloseMonthUseCase,
     private val today: () -> LocalDate = { Clock.System.todayIn(TimeZone.currentSystemDefault()) },
 ) {
     /** Loads the demo data; returns `false` when the database already had data. */
@@ -109,6 +111,10 @@ class SeedDemoDataUseCase(
         registerPurchase.execute(PurchaseInput(nubankCard, Money(240_000), 6, date.minus(DatePeriod(months = 1)), labels.television))
         registerPurchase.execute(PurchaseInput(c6Card, Money(120_000), 3, day(2), labels.notebook, thirdParty = father))
         registerReimbursement.execute(father, Money(5_000), date)
+        // As in real use: last month was closed (UC03), which opened this month with its EXPECTED
+        // salary, recurring bills and planned contribution (RN06, RN07, RN11) to be checked.
+        // Last, so nothing above is registered in a closed month (RN08).
+        closeMonth.execute(month.previous())
         return true
     }
 }
