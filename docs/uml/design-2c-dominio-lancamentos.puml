@@ -14,7 +14,7 @@ abstract class Lancamento {
   + descricao : String
   + competencia : MesAno
   + origemId : String?
-  - situacao : PREVISTO | REALIZADO
+  + situacao : PREVISTO | REALIZADO {readOnly}
   + confirmar(valorReal : Dinheiro)
 }
 class Gasto {
@@ -37,8 +37,10 @@ class CompraParcelada <<foco>> {
   + valorTotal : Dinheiro
   + quantidade : Int
   + dataCompra : LocalDate
+  + descricao : String
   + cartao : CartaoDeCredito
   + terceiro : Pessoa?
+  + {static} LIMITE_DE_PARCELAS = 2..48
   + gerarParcelas() : List<Parcela>
 }
 class ConversaoCambial {
