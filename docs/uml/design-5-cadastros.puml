@@ -9,72 +9,72 @@ title GastoCerto — Design (vista 5): cadastros e demais casos de uso
 left to right direction
 
 package "ui" {
-  class CadastrosViewModel
-  class RecorrenciasViewModel
-  class InvestimentosViewModel
-  class LancamentosViewModel
+  class RegistryViewModel
+  class RecurrencesViewModel
+  class InvestmentsViewModel
+  class EntriesViewModel
 }
 package "usecase" {
-  class GerenciarCadastrosUseCase <<Controller>> {
-    + salvarPessoa(p : Pessoa)
-    + salvarInstituicao(i : Instituicao)
-    + salvarMeio(m : MeioDePagamento)
-    + desativarMeio(m : MeioDePagamento)
+  class ManageRegistryUseCase <<Controller>> {
+    + savePerson(person : Person)
+    + saveInstitution(institution : Institution)
+    + savePaymentMethod(paymentMethod : PaymentMethod)
+    + deactivatePaymentMethod(paymentMethod : PaymentMethod)
   }
-  class GerenciarRecorrenciasUseCase <<Controller>> {
-    + salvarContaFixa(c : ContaFixa)
-    + salvarReceitaRecorrente(r : ReceitaRecorrente)
+  class ManageRecurrencesUseCase <<Controller>> {
+    + saveRecurringBill(bill : RecurringBill)
+    + saveRecurringIncome(income : RecurringIncome)
   }
-  class GerenciarInvestimentosUseCase <<Controller>> {
-    + definirAportePlanejado(c : ContaInvestimento, v : Dinheiro)
-    + registrarVenda(c : ContaInvestimento, v : Dinheiro, data : LocalDate)
+  class ManageInvestmentsUseCase <<Controller>> {
+    + setPlannedContribution(account : InvestmentAccount, amount : Money)
+    + registerSale(account : InvestmentAccount, amount : Money, date : LocalDate)
   }
-  class RegistrarReceitaAvulsaUseCase <<Controller>> {
-    + executar(valor : Dinheiro, data : LocalDate, descricao : String)
+  class RegisterOneOffIncomeUseCase <<Controller>> {
+    + execute(amount : Money, date : LocalDate, description : String)
   }
-  class CorrigirLancamentoUseCase <<Controller>> {
-    + editar(l : Lancamento)
-    + excluir(l : Lancamento)
-    + confirmarPrevisto(l : Lancamento, valorReal : Dinheiro)
+  class CorrectEntryUseCase <<Controller>> {
+    + edit(entry : Entry)
+    + delete(entry : Entry)
+    + confirmExpected(entry : Entry, actualAmount : Money)
   }
-  class RegistrarReembolsoUseCase <<Controller>> {
-    + saldoAReceber(terceiro : Pessoa) : SaldoAReceber
-    + executar(terceiro : Pessoa, valor : Dinheiro, data : LocalDate)
+  class RegisterReimbursementUseCase <<Controller>> {
+    + receivableBalance(thirdParty : Person) : ReceivableBalance
+    + execute(thirdParty : Person, amount : Money, date : LocalDate)
   }
 }
 package "domain (vistas 3 e 4b)" {
-  class CadastroRepository <<ref>>
-  class RecorrenciaRepository <<ref>>
-  class LancamentoRepository <<ref>>
-  class CompetenciaRepository <<ref>>
-  class ReembolsoRepository <<ref>>
-  class FabricaDeLancamentos <<ref>>
+  class RegistryRepository <<ref>>
+  class RecurrenceRepository <<ref>>
+  class EntryRepository <<ref>>
+  class AccountingMonthRepository <<ref>>
+  class ReimbursementRepository <<ref>>
+  class EntryFactory <<ref>>
 }
 
-CadastrosViewModel --> GerenciarCadastrosUseCase
-RecorrenciasViewModel --> GerenciarRecorrenciasUseCase
-InvestimentosViewModel --> GerenciarInvestimentosUseCase
-LancamentosViewModel --> RegistrarReceitaAvulsaUseCase
-LancamentosViewModel --> CorrigirLancamentoUseCase
-LancamentosViewModel --> RegistrarReembolsoUseCase
-GerenciarCadastrosUseCase --> CadastroRepository
-GerenciarRecorrenciasUseCase --> RecorrenciaRepository
-GerenciarRecorrenciasUseCase --> FabricaDeLancamentos
-GerenciarRecorrenciasUseCase --> LancamentoRepository
-GerenciarInvestimentosUseCase --> CadastroRepository
-GerenciarInvestimentosUseCase --> LancamentoRepository
-RegistrarReceitaAvulsaUseCase --> LancamentoRepository
-RegistrarReceitaAvulsaUseCase --> CompetenciaRepository
-CorrigirLancamentoUseCase --> LancamentoRepository
-CorrigirLancamentoUseCase --> CompetenciaRepository
-RegistrarReembolsoUseCase --> LancamentoRepository
-RegistrarReembolsoUseCase --> ReembolsoRepository
+RegistryViewModel --> ManageRegistryUseCase
+RecurrencesViewModel --> ManageRecurrencesUseCase
+InvestmentsViewModel --> ManageInvestmentsUseCase
+EntriesViewModel --> RegisterOneOffIncomeUseCase
+EntriesViewModel --> CorrectEntryUseCase
+EntriesViewModel --> RegisterReimbursementUseCase
+ManageRegistryUseCase --> RegistryRepository
+ManageRecurrencesUseCase --> RecurrenceRepository
+ManageRecurrencesUseCase --> EntryFactory
+ManageRecurrencesUseCase --> EntryRepository
+ManageInvestmentsUseCase --> RegistryRepository
+ManageInvestmentsUseCase --> EntryRepository
+RegisterOneOffIncomeUseCase --> EntryRepository
+RegisterOneOffIncomeUseCase --> AccountingMonthRepository
+CorrectEntryUseCase --> EntryRepository
+CorrectEntryUseCase --> AccountingMonthRepository
+RegisterReimbursementUseCase --> EntryRepository
+RegisterReimbursementUseCase --> ReimbursementRepository
 
 legend right
-  GerenciarRecorrenciasUseCase usa a Factory para gerar o
+  ManageRecurrencesUseCase usa a Factory para gerar o
   previsto do mês aberto ao cadastrar uma conta fixa [RN06].
-  GerenciarCadastrosUseCase desativa, mas não exclui,
-  meio com lançamentos [RN09]. CorrigirLancamentoUseCase
+  ManageRegistryUseCase desativa, mas não exclui,
+  meio com lançamentos [RN09]. CorrectEntryUseCase
   respeita mês fechado [RN08]. Reembolso ≤ saldo [RN03].
 endlegend
 @enduml

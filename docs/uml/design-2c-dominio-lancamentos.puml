@@ -7,79 +7,79 @@ hide <<ref>> stereotype
 hide <<foco>> stereotype
 title GastoCerto — Design (vista 2c): lançamentos (domain.model)
 
-abstract class Lancamento {
+abstract class Entry {
   + id : String
-  + valor : Dinheiro
-  + data : LocalDate
-  + descricao : String
-  + competencia : MesAno
-  + origemId : String?
-  + situacao : PREVISTO | REALIZADO {readOnly}
-  + confirmar(valorReal : Dinheiro)
+  + amount : Money
+  + date : LocalDate
+  + description : String
+  + accountingMonth : MonthYear
+  + originId : String?
+  + status : EXPECTED | ACTUAL {readOnly}
+  + confirm(actualAmount : Money)
 }
-class Gasto {
-  + meio : MeioDePagamento
-  + terceiro : Pessoa?
-  + conversao : ConversaoCambial?
-  + ehDeTerceiro() : Boolean
+class Expense {
+  + paymentMethod : PaymentMethod
+  + thirdParty : Person?
+  + conversion : CurrencyConversion?
+  + isThirdParty() : Boolean
 }
-class Parcela {
-  + compraId : String
-  + numero : Int
-  + totalDeParcelas : Int
-  + rotulo() : String
+class Installment {
+  + purchaseId : String
+  + number : Int
+  + totalInstallments : Int
+  + label() : String
 }
-class Receita {
-  + tipo : SALARIO | AVULSA | VENDA_INVESTIMENTO
+class Income {
+  + type : SALARY | ONE_OFF | INVESTMENT_SALE
 }
-class CompraParcelada <<foco>> {
+class InstallmentPurchase <<foco>> {
   + id : String
-  + valorTotal : Dinheiro
-  + quantidade : Int
-  + dataCompra : LocalDate
-  + descricao : String
-  + cartao : CartaoDeCredito
-  + terceiro : Pessoa?
-  + {static} LIMITE_DE_PARCELAS = 2..48
-  + gerarParcelas() : List<Parcela>
+  + totalAmount : Money
+  + installmentCount : Int
+  + purchaseDate : LocalDate
+  + description : String
+  + card : CreditCard
+  + thirdParty : Person?
+  + {static} INSTALLMENT_RANGE = 2..48
+  + generateInstallments() : List<Installment>
 }
-class ConversaoCambial {
-  + valorOriginal : Long
-  + cotacao : Long
-  + emReais() : Dinheiro
+class CurrencyConversion {
+  + originalAmount : Long
+  + exchangeRate : Long
+  + toBrl() : Money
 }
-class Reembolso {
+class Reimbursement {
   + id : String
-  + terceiro : Pessoa
-  + valor : Dinheiro
-  + data : LocalDate
+  + thirdParty : Person
+  + amount : Money
+  + date : LocalDate
 }
-class MeioDePagamento <<ref>>
-class CartaoDeCredito <<ref>>
-class Pessoa <<ref>>
+class PaymentMethod <<ref>>
+class CreditCard <<ref>>
+class Person <<ref>>
 
-Lancamento <|-- Gasto
-Lancamento <|-- Receita
-Gasto <|-- Parcela
-Gasto "0..*" --> "1" MeioDePagamento : meio
-Gasto "0..*" --> "0..1" Pessoa : terceiro
-Gasto "1" *-- "0..1" ConversaoCambial
-CompraParcelada "1" *-- "2..48" Parcela : cria >
-CompraParcelada --> "1" CartaoDeCredito
-Reembolso --> "1" Pessoa
+Entry <|-- Expense
+Entry <|-- Income
+Expense <|-- Installment
+Expense "0..*" --> "1" PaymentMethod : paymentMethod
+Expense "0..*" --> "0..1" Person : thirdParty
+Expense "1" *-- "0..1" CurrencyConversion
+InstallmentPurchase "1" *-- "2..48" Installment : cria >
+InstallmentPurchase --> "1" CreditCard
+Reimbursement --> "1" Person
 
-note right of CompraParcelada
+note right of InstallmentPurchase
   <b>Creator + Information Expert</b>: gera N parcelas
   em competências consecutivas a partir da 1ª (RN01),
   rotuladas k/N; resto dos centavos na 1ª [RN02].
-  Não tem tabela própria: as parcelas guardam compraId [D5]
+  Não tem tabela própria: as parcelas guardam purchaseId [D5]
 end note
-note bottom of ConversaoCambial
-  valorOriginal em centavos da moeda; cotacao com
-  4 casas; emReais = valor × cotação ÷ 10.000 [RN05 · D1]
+note bottom of CurrencyConversion
+  originalAmount em centavos da moeda; exchangeRate com
+  4 casas; toBrl = valor × cotação ÷ 10.000 [RN05 · D1]
 end note
-note bottom of Lancamento
-  origemId: id da recorrência que gerou o PREVISTO;
+note bottom of Entry
+  originId: id da recorrência que gerou o EXPECTED;
   evita duplicar no fechamento do mês [D3]
 end note
 legend left

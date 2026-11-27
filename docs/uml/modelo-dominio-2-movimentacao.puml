@@ -8,72 +8,72 @@ hide <<ref>> members
 hide <<ref>> stereotype
 hide <<foco>> stereotype
 
-class Competencia <<foco>> {
-  mesAno
-  situacao : ABERTA | FECHADA
-  /receitas : Dinheiro
-  /gastoTotal : Dinheiro
-  /gastosDeTerceiros : Dinheiro
-  /sobra : Dinheiro
+class AccountingMonth <<foco>> {
+  monthYear
+  status : OPEN | CLOSED
+  /income : Money
+  /totalExpenses : Money
+  /thirdPartyExpenses : Money
+  /surplus : Money
 }
-abstract class Lancamento {
-  valor : Dinheiro
-  data
-  descricao
-  situacao : PREVISTO | REALIZADO
+abstract class Entry {
+  amount : Money
+  date
+  description
+  status : EXPECTED | ACTUAL
 }
-class Gasto
-class Receita {
-  tipo : SALARIO | AVULSA | VENDA_INVESTIMENTO
+class Expense
+class Income {
+  type : SALARY | ONE_OFF | INVESTMENT_SALE
 }
-class Parcela {
-  numero : k/N
+class Installment {
+  number : k/N
 }
-class CompraParcelada {
-  valorTotal : Dinheiro
-  quantidadeParcelas : 2..48
+class InstallmentPurchase {
+  totalAmount : Money
+  installmentCount : 2..48
 }
-class ConversaoCambial {
-  valorOriginal
-  cotacao
+class CurrencyConversion {
+  originalAmount
+  exchangeRate
 }
-class Fatura {
-  dataFechamento
-  dataVencimento
-  /total : Dinheiro
+class Statement {
+  closingDate
+  dueDate
+  /total : Money
 }
-class Reembolso {
-  valor : Dinheiro
-  data
+class Reimbursement {
+  amount : Money
+  date
 }
-class "MeioDePagamento" as Meio <<ref>>
-class "CartaoDeCredito" as Cartao <<ref>>
-class "Pessoa (terceiro)" as Terceiro <<ref>>
-class "ContaFixa / ReceitaRecorrente /\nContaInvestimento" as Recorrencias <<ref>>
+class "PaymentMethod" as Meio <<ref>>
+class "CreditCard" as Cartao <<ref>>
+class "Person (third party)" as Terceiro <<ref>>
+class "RecurringBill / RecurringIncome /\nInvestmentAccount" as Recorrencias <<ref>>
 
-Lancamento "0..*" -up- "1" Competencia : pertence a >
-Lancamento <|-- Gasto
-Lancamento <|-- Receita
-Gasto <|-- Parcela
-CompraParcelada "1" *-- "2..48" Parcela : dividida em >
-Gasto "0..*" -- "1" Meio : pago com >
-Gasto "0..*" -- "0..1" Terceiro : em nome de >
-Gasto "1" *-- "0..1" ConversaoCambial : convertido por >
-Terceiro "1" -- "0..*" Reembolso : devolve >
-Cartao "1" -- "0..*" Fatura : gera >
-Fatura "0..*" -up- "1" Competencia : vence em >
-Fatura "0..1" o-- "0..*" Gasto : compõe >
-Recorrencias "1" .. "0..*" Lancamento : origina >
+Entry "0..*" -up- "1" AccountingMonth : pertence a >
+Entry <|-- Expense
+Entry <|-- Income
+Expense <|-- Installment
+InstallmentPurchase "1" *-- "2..48" Installment : dividida em >
+Expense "0..*" -- "1" Meio : pago com >
+Expense "0..*" -- "0..1" Terceiro : em nome de >
+Expense "1" *-- "0..1" CurrencyConversion : convertido por >
+Terceiro "1" -- "0..*" Reimbursement : devolve >
+Cartao "1" -- "0..*" Statement : gera >
+Statement "0..*" -up- "1" AccountingMonth : vence em >
+Statement "0..1" o-- "0..*" Expense : compõe >
+Recorrencias "1" .. "0..*" Entry : origina >
 
-note right of Competencia
-  sobra = receitas − (gastoTotal − gastosDeTerceiros) [RN04]
-  FECHADA não aceita inclusão, edição nem exclusão [RN08]
+note right of AccountingMonth
+  surplus = income − (totalExpenses − thirdPartyExpenses) [RN04]
+  CLOSED não aceita inclusão, edição nem exclusão [RN08]
 end note
-note bottom of Fatura
+note bottom of Statement
   Até o fechamento: fatura do ciclo; depois: a seguinte.
   Competência da fatura = mês do vencimento [RN01]
 end note
-note bottom of Reembolso
+note bottom of Reimbursement
   Só dá baixa no "a receber" do terceiro;
   não é receita [RN03]
 end note

@@ -7,77 +7,77 @@ hide <<ref>> stereotype
 hide <<foco>> stereotype
 title GastoCerto — Design (vista 2b): cadastros e recorrências (domain.model)
 
-class Pessoa {
+class Person {
   + id : String
-  + nome : String
-  + papel : USUARIO | TITULAR | TERCEIRO
+  + name : String
+  + role : USER | HOLDER | THIRD_PARTY
 }
-class Instituicao {
+class Institution {
   + id : String
-  + nome : String
+  + name : String
 }
-abstract class MeioDePagamento <<foco>> {
+abstract class PaymentMethod <<foco>> {
   + id : String
-  + nome : String
-  + titular : Pessoa
-  + instituicao : Instituicao
-  + ativo : Boolean
-  + {abstract} politicaDeCompetencia() : PoliticaDeCompetencia
+  + name : String
+  + holder : Person
+  + institution : Institution
+  + active : Boolean
+  + {abstract} accountingMonthPolicy() : AccountingMonthPolicy
 }
-class CartaoDeCredito {
-  + diaFechamento : Int
-  + diaVencimento : Int
+class CreditCard {
+  + closingDay : Int
+  + dueDay : Int
 }
-class ContaCorrente
-class CarteiraMoedaEstrangeira {
-  + moeda : String
+class CheckingAccount
+class ForeignCurrencyWallet {
+  + currency : String
 }
-class ContaInvestimento {
-  + aportePlanejadoMensal : Dinheiro?
-  + gerarAportePrevisto(mes : MesAno) : Gasto?
+class InvestmentAccount {
+  + plannedMonthlyContribution : Money?
+  + generateExpectedContribution(month : MonthYear) : Expense?
 }
-class ContaFixa {
+class RecurringBill {
   + id : String
-  + descricao : String
-  + valorPrevisto : Dinheiro
-  + diaVencimento : Int
-  + meio : MeioDePagamento
-  + ativa : Boolean
-  + gerarPrevisto(mes : MesAno) : Gasto
+  + description : String
+  + expectedAmount : Money
+  + dueDay : Int
+  + paymentMethod : PaymentMethod
+  + active : Boolean
+  + generateExpected(month : MonthYear) : Expense
 }
-class ReceitaRecorrente {
+class RecurringIncome {
   + id : String
-  + descricao : String
-  + valor : Dinheiro
-  + diaRecebimento : Int
-  + ativa : Boolean
-  + gerarPrevista(mes : MesAno) : Receita
+  + description : String
+  + amount : Money
+  + payDay : Int
+  + active : Boolean
+  + generateExpected(month : MonthYear) : Income
 }
-class Gasto <<ref>>
-class Receita <<ref>>
-interface PoliticaDeCompetencia <<ref>>
+class Expense <<ref>>
+class Income <<ref>>
+interface AccountingMonthPolicy <<ref>>
 
-MeioDePagamento "0..*" -up-> "1" Pessoa : titular
-MeioDePagamento "0..*" -up-> "1" Instituicao
-MeioDePagamento <|-- CartaoDeCredito
-MeioDePagamento <|-- ContaCorrente
-MeioDePagamento <|-- CarteiraMoedaEstrangeira
-MeioDePagamento <|-- ContaInvestimento
-MeioDePagamento .right.> PoliticaDeCompetencia
-ContaFixa --> "1" MeioDePagamento : meio
-ContaFixa ..> Gasto : cria
-ReceitaRecorrente ..> Receita : cria
-ContaInvestimento ..> Gasto : cria
+PaymentMethod "0..*" -up-> "1" Person : holder
+PaymentMethod "0..*" -up-> "1" Institution
+PaymentMethod <|-- CreditCard
+PaymentMethod <|-- CheckingAccount
+PaymentMethod <|-- ForeignCurrencyWallet
+PaymentMethod <|-- InvestmentAccount
+PaymentMethod .right.> AccountingMonthPolicy
+RecurringBill --> "1" PaymentMethod : paymentMethod
+RecurringBill ..> Expense : cria
+RecurringIncome ..> Income : cria
+InvestmentAccount ..> Expense : cria
 
-note bottom of ContaFixa
-  <b>Creator</b>: gera o gasto PREVISTO do mês,
-  com origemId = id da conta [RN06 · D3]
+note bottom of RecurringBill
+  <b>Creator</b>: gera o gasto EXPECTED do mês,
+  com originId = id da conta [RN06 · D3]
 end note
-note bottom of ReceitaRecorrente
-  <b>Creator</b>: salário PREVISTO no dia
+note bottom of RecurringIncome
+  <b>Creator</b>: salário EXPECTED no dia
   de recebimento [RN07 · D3]
 end note
-note bottom of CartaoDeCredito
+note bottom of CreditCard
   dias entre 1 e 31 [RN09]
 end note
 legend left

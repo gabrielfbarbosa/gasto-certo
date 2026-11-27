@@ -23,18 +23,18 @@ hide <<grupo>> stereotype
 rectangle "<b>androidApp · iosApp · webApp</b>\npontos de entrada (MainActivity, MainViewController, main)" as plat
 
 rectangle "módulo shared · commonMain" as common <<grupo>> {
-  rectangle "<b>ui</b>\nScreens Compose · ViewModels\nXEstado (UiState) · XEvento" as ui
+  rectangle "<b>ui</b>\nScreens Compose · ViewModels\nXUiState · XEvent" as ui
   rectangle "<b>usecase</b>\num *UseCase por caso de uso\n(papel GRASP Controller)" as uc
   rectangle "domain" as dom <<dominio>> {
     rectangle "<b>model</b>\nentidades e valores" as model
-    rectangle "<b>regra</b>\nStrategy · Factory · exceções" as regra
-    rectangle "<b>repositorio</b>\ninterfaces + Transacao" as repo
+    rectangle "<b>rule</b>\nStrategy · Factory · exceções" as regra
+    rectangle "<b>repository</b>\ninterfaces + Transaction" as repo
   }
-  rectangle "<b>data.memoria</b>\nrepositórios em memória\n(Web e testes)" as mem
+  rectangle "<b>data.memory</b>\nrepositórios em memória\n(Web e testes)" as mem
   rectangle "<b>di</b>\nmódulos Koin" as di
 }
 rectangle "módulo shared · mobileMain (Android + iOS)" as mobile <<grupo>> {
-  rectangle "<b>data</b> (Room KMP)\nentities · DAOs · mappers\nRoom*Repository · RoomTransacao" as room
+  rectangle "<b>data</b> (Room KMP)\nentities · DAOs · mappers\nRoom*Repository · RoomTransaction" as room
 }
 
 plat -down-> ui

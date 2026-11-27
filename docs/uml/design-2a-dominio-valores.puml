@@ -7,85 +7,85 @@ hide <<ref>> stereotype
 hide <<foco>> stereotype
 title GastoCerto — Design (vista 2a): valores, competência e consultas (domain.model)
 
-class Dinheiro <<value>> {
-  + centavos : Long
-  + {static} ESCALA_DA_COTACAO : Long = 10000
-  + plus(outro : Dinheiro) : Dinheiro
-  + minus(outro : Dinheiro) : Dinheiro
-  + dividirEm(n : Int) : List<Dinheiro>
-  + converter(cotacao : Long) : Dinheiro
-  + ehPositivo() : Boolean
+class Money <<value>> {
+  + cents : Long
+  + {static} EXCHANGE_RATE_SCALE : Long = 10000
+  + plus(other : Money) : Money
+  + minus(other : Money) : Money
+  + splitInto(n : Int) : List<Money>
+  + convert(exchangeRate : Long) : Money
+  + isPositive() : Boolean
 }
-class MesAno <<value>> {
-  + ano : Int
-  + mes : Int
-  + proximo() : MesAno
-  + anterior() : MesAno
-  + dia(dia : Int) : LocalDate
+class MonthYear <<value>> {
+  + year : Int
+  + month : Int
+  + next() : MonthYear
+  + previous() : MonthYear
+  + atDay(day : Int) : LocalDate
 }
-class Competencia <<foco>> {
-  + mesAno : MesAno
-  + situacao : ABERTA | FECHADA {readOnly}
-  + fechar()
-  + reabrir()
-  + garantirAberta()
+class AccountingMonth <<foco>> {
+  + monthYear : MonthYear
+  + status : OPEN | CLOSED {readOnly}
+  + close()
+  + reopen()
+  + ensureOpen()
 }
-class ResumoDoPeriodo <<value>> {
-  + receitas : Dinheiro
-  + gastoTotal : Dinheiro
-  + gastosDeTerceiros : Dinheiro
-  + porMeio : Map<MeioDePagamento, Dinheiro>
-  + porTitular : Map<Pessoa, Dinheiro>
-  + sobra() : Dinheiro
-  + {static} de(lancamentos, titular : Pessoa?) : ResumoDoPeriodo
+class PeriodSummary <<value>> {
+  + income : Money
+  + totalExpenses : Money
+  + thirdPartyExpenses : Money
+  + byPaymentMethod : Map<PaymentMethod, Money>
+  + byHolder : Map<Person, Money>
+  + surplus() : Money
+  + {static} of(entries, holder : Person?) : PeriodSummary
 }
-class SaldoAReceber <<value>> {
-  + terceiro : Pessoa
-  + valor : Dinheiro
-  + {static} de(terceiro, gastos, reembolsos) : SaldoAReceber
-  + validarReembolso(valor : Dinheiro)
+class ReceivableBalance <<value>> {
+  + thirdParty : Person
+  + amount : Money
+  + {static} of(thirdParty, expenses, reimbursements) : ReceivableBalance
+  + validateReimbursement(amount : Money)
 }
-class Fatura <<value>> {
-  + cartao : CartaoDeCredito
-  + competencia : MesAno
-  + dataFechamento : LocalDate
-  + dataVencimento : LocalDate
-  + gastos : List<Gasto>
-  + total() : Dinheiro
-  + {static} de(cartao, mes, gastos) : Fatura
+class Statement <<value>> {
+  + card : CreditCard
+  + accountingMonth : MonthYear
+  + closingDate : LocalDate
+  + dueDate : LocalDate
+  + expenses : List<Expense>
+  + total() : Money
+  + {static} of(card, month, expenses) : Statement
 }
-class Lancamento <<ref>>
-class Gasto <<ref>>
-class Reembolso <<ref>>
-class CartaoDeCredito <<ref>>
+class Entry <<ref>>
+class Expense <<ref>>
+class Reimbursement <<ref>>
+class CreditCard <<ref>>
 
-Competencia --> "1" MesAno
-ResumoDoPeriodo ..> Lancamento : soma
-SaldoAReceber ..> Gasto
-SaldoAReceber ..> Reembolso
-Fatura --> "1" CartaoDeCredito
-Fatura o-- "0..*" Gasto
-Lancamento ..> Dinheiro
-Lancamento ..> MesAno
+AccountingMonth --> "1" MonthYear
+PeriodSummary ..> Entry : soma
+ReceivableBalance ..> Expense
+ReceivableBalance ..> Reimbursement
+Statement --> "1" CreditCard
+Statement o-- "0..*" Expense
+Entry ..> Money
+Entry ..> MonthYear
 
-note right of Dinheiro
+note right of Money
   Centavos em Long: sem ponto flutuante [RNF04].
-  dividirEm põe o resto na 1ª parcela [RN02].
-  cotacao com 4 casas em Long (5,4321 → 54321);
+  splitInto põe o resto na 1ª parcela [RN02].
+  exchangeRate com 4 casas em Long (5,4321 → 54321);
   arredonda ao centavo, half-up [RN05 · D1]
 end note
-note bottom of Competencia
-  FECHADA não aceita lançamentos;
-  fechar() de novo lança CompetenciaFechada [RN08]
+note bottom of AccountingMonth
+  CLOSED não aceita lançamentos;
+  close() de novo lança AccountingMonthClosed [RN08]
 end note
-note bottom of ResumoDoPeriodo
-  sobra = receitas − (gastoTotal − gastosDeTerceiros) [RN04]
+note bottom of PeriodSummary
+  surplus() = income − (totalExpenses − thirdPartyExpenses) [RN04]
   filtro por titular [RN10]
 end note
-note bottom of SaldoAReceber
-  reembolso > saldo → ReembolsoMaiorQueSaldo [RN03]
+note bottom of ReceivableBalance
+  reembolso > saldo → ReimbursementExceedsBalance [RN03]
 end note
-note bottom of Fatura
+note bottom of Statement
   Não é gravada: montada do cartão + competência
   (mês do vencimento) [RN01 · RF13]
 end note

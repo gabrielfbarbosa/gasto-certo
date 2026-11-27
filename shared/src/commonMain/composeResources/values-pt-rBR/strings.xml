@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Brazilian Portuguese user messages for business rule violations. -->
+<resources>
+    <string name="rule_invalid_amount">O valor precisa ser maior que zero.</string>
+    <string name="rule_invalid_exchange_rate">Informe uma cotação maior que zero.</string>
+    <string name="rule_installments_out_of_range">A compra parcelada deve ter de 2 a 48 parcelas (você informou %1$s).</string>
+    <string name="rule_accounting_month_closed">O mês %1$s/%2$s está fechado. Reabra o mês para alterar os lançamentos.</string>
+    <string name="rule_reimbursement_exceeds_balance">O reembolso (%1$s) é maior que o valor a receber (%2$s).</string>
+    <string name="rule_payment_method_has_entries">"%1$s" tem lançamentos e não pode ser excluído. Desative-o.</string>
+    <string name="rule_invalid_day">O dia de %1$s deve estar entre 1 e 31 (você informou %2$s).</string>
+    <string name="rule_invalid_holder">%1$s é terceiro reembolsante e não pode ser titular de um meio de pagamento.</string>
+    <string name="day_kind_closing">fechamento</string>
+    <string name="day_kind_due">vencimento</string>
+    <string name="day_kind_pay">recebimento</string>
+</resources>

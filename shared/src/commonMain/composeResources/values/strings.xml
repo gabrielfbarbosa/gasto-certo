@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Default (English) user messages for business rule violations. Portuguese: values-pt-rBR. -->
+<resources>
+    <string name="rule_invalid_amount">The amount must be greater than zero.</string>
+    <string name="rule_invalid_exchange_rate">Enter an exchange rate greater than zero.</string>
+    <string name="rule_installments_out_of_range">An installment purchase must have 2 to 48 installments (you entered %1$s).</string>
+    <string name="rule_accounting_month_closed">%1$s/%2$s is closed. Reopen the month to change its entries.</string>
+    <string name="rule_reimbursement_exceeds_balance">The reimbursement (%1$s) is greater than the amount owed (%2$s).</string>
+    <string name="rule_payment_method_has_entries">"%1$s" has entries and cannot be deleted. Deactivate it instead.</string>
+    <string name="rule_invalid_day">The %1$s day must be between 1 and 31 (you entered %2$s).</string>
+    <string name="rule_invalid_holder">%1$s is a third party and cannot hold a payment method.</string>
+    <string name="day_kind_closing">closing</string>
+    <string name="day_kind_due">due</string>
+    <string name="day_kind_pay">pay</string>
+</resources>

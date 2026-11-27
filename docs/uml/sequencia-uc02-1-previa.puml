@@ -6,55 +6,55 @@ autonumber "<b>0"
 title UC02 – Registrar compra parcelada · Parte 1/2: prévia das parcelas
 
 actor "Usuário" as U
-boundary "RegistrarGastoScreen" as Tela
-participant "RegistrarGastoViewModel" as VM <<viewmodel>>
-participant "RegistrarCompra\nParceladaUseCase" as UC <<foco>>
-participant "FabricaDeLancamentos" as Fab
-participant "compra :\nCompraParcelada" as CP
-participant "cartao :\nCartaoDeCredito" as Cartao
-participant "politica :\nCompetenciaPor\nFechamentoDeFatura" as Pol
-participant "valorTotal :\nDinheiro" as Din
-participant "Parcela" as Par
+boundary "RegisterExpenseScreen" as Tela
+participant "RegisterExpenseViewModel" as VM <<viewmodel>>
+participant "RegisterInstallment\nPurchaseUseCase" as UC <<foco>>
+participant "EntryFactory" as Fab
+participant "purchase :\nInstallmentPurchase" as CP
+participant "card :\nCreditCard" as Cartao
+participant "policy :\nStatement\nClosingPolicy" as Pol
+participant "totalAmount :\nMoney" as Din
+participant "Installment" as Par
 
 U -> Tela : cartão, valor total, nº de parcelas,\ndata e descrição
-Tela -> VM : previaParcelas()
+Tela -> VM : previewInstallments()
 activate VM
-VM -> UC : previa(dados)
+VM -> UC : preview(input)
 activate UC
-UC -> Fab : compraParcelada(dados)
+UC -> Fab : installmentPurchase(input)
 activate Fab
 alt valor <= 0
-  Fab --> UC : <<lança>> ValorInvalido [RN09]
-  UC --> VM : ValorInvalido
-  VM --> Tela : estado com erro (E1)
+  Fab --> UC : <<lança>> InvalidAmount [RN09]
+  UC --> VM : InvalidAmount
+  VM --> Tela : uiState com erro (E1)
 else quantidade fora de 2..48
-  Fab --> UC : <<lança>> ParcelasForaDoLimite [RN02]
-  UC --> VM : ParcelasForaDoLimite
-  VM --> Tela : estado com erro (E2)
+  Fab --> UC : <<lança>> InstallmentsOutOfRange [RN02]
+  UC --> VM : InstallmentsOutOfRange
+  VM --> Tela : uiState com erro (E2)
 else dados válidos
   create CP
   Fab -> CP : <<create>>
-  Fab --> UC : compra
+  Fab --> UC : purchase
   deactivate Fab
-  UC -> CP : gerarParcelas()
+  UC -> CP : generateInstallments()
   activate CP
-  CP -> Cartao : politicaDeCompetencia()
+  CP -> Cartao : accountingMonthPolicy()
   create Pol
-  Cartao -> Pol : <<create>>(diaFechamento, diaVencimento)
-  Cartao --> CP : politica
-  CP -> Pol : competenciaDe(dataCompra)
-  Pol --> CP : mes1 [RN01]
-  CP -> Din : dividirEm(quantidade)
-  Din --> CP : valores (resto na 1ª) [RN02]
+  Cartao -> Pol : <<create>>(closingDay, dueDay)
+  Cartao --> CP : policy
+  CP -> Pol : accountingMonthOf(purchaseDate)
+  Pol --> CP : month1 [RN01]
+  CP -> Din : splitInto(installmentCount)
+  Din --> CP : amounts (resto na 1ª) [RN02]
   loop k = 1..N
     create Par
-    CP -> Par : <<create>>(k, N, valores[k],\nmes1 + (k − 1), compraId, terceiro?)
+    CP -> Par : <<create>>(k, N, amounts[k],\nmonth1 + (k − 1), purchaseId, thirdParty?)
   end
-  CP --> UC : parcelas
+  CP --> UC : installments
   deactivate CP
-  UC --> VM : parcelas
+  UC --> VM : installments
   deactivate UC
-  VM --> Tela : estado com a prévia\n"k/N – valor – fatura"
+  VM --> Tela : uiState com a prévia\n"k/N – valor – fatura"
   deactivate VM
   Tela --> U : mostra a prévia
 end

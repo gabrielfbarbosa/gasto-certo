@@ -6,49 +6,49 @@ autonumber "<b>0"
 title UC03 – Fechar o mês · Parte 2/3: fechamento numa única transação
 
 actor "Usuário" as U
-boundary "FecharMesScreen" as Tela
-participant "FecharMesViewModel" as VM <<viewmodel>>
-participant "FecharMesUseCase" as UC <<foco>>
-participant "Transacao" as Tx <<repositório>>
-participant "Competencia\nRepository" as CRepo <<repositório>>
-participant "atual :\nCompetencia" as Atual
-participant "Recorrencia\nRepository" as RRepo <<repositório>>
-participant "FabricaDe\nLancamentos" as Fab
-participant "Lancamento\nRepository" as LRepo <<repositório>>
+boundary "CloseMonthScreen" as Tela
+participant "CloseMonthViewModel" as VM <<viewmodel>>
+participant "CloseMonthUseCase" as UC <<foco>>
+participant "Transaction" as Tx <<repositório>>
+participant "AccountingMonth\nRepository" as CRepo <<repositório>>
+participant "current :\nAccountingMonth" as Atual
+participant "Recurrence\nRepository" as RRepo <<repositório>>
+participant "EntryFactory" as Fab
+participant "Entry\nRepository" as LRepo <<repositório>>
 
 U -> Tela : confirma o fechamento
-Tela -> VM : fechar()
+Tela -> VM : close()
 activate VM
-VM -> UC : executar(mes)
+VM -> UC : execute(month)
 activate UC
-UC -> Tx : executar { … }
+UC -> Tx : execute { … }
 activate Tx
-UC -> CRepo : buscarOuCriar(mes)
-CRepo --> UC : atual
-UC -> Atual : fechar()
+UC -> CRepo : findOrCreate(month)
+CRepo --> UC : current
+UC -> Atual : close()
 alt já estava fechada (E1)
-  Atual --> UC : <<lança>> CompetenciaFechada [RN08]
-  UC --> VM : CompetenciaFechada
+  Atual --> UC : <<lança>> AccountingMonthClosed [RN08]
+  UC --> VM : AccountingMonthClosed
   VM --> Tela : evento "Mês já fechado. Reabrir?"
 else aberta
-  UC -> CRepo : salvar(atual)
-  UC -> CRepo : buscarOuCriar(mes.proximo())
-  CRepo --> UC : seguinte
-  UC -> RRepo : contasFixasAtivas(), receitasAtivas(),\ninvestimentosComAporte()
-  RRepo --> UC : contas, receitas, investimentos
-  UC -> Fab : previstosDoMes(seguinte.mesAno,\ncontas, receitas, investimentos)
+  UC -> CRepo : save(current)
+  UC -> CRepo : findOrCreate(month.next())
+  CRepo --> UC : following
+  UC -> RRepo : activeRecurringBills(), activeRecurringIncomes(),\ninvestmentsWithContribution()
+  RRepo --> UC : bills, incomes, investments
+  UC -> Fab : expectedForMonth(following.monthYear,\nbills, incomes, investments)
   ref over Fab : Parte 3:\ngerar previstos
-  Fab --> UC : previstos
-  UC -> LRepo : doMes(seguinte.mesAno)
-  LRepo --> UC : existentes
-  UC -> UC : semDuplicados(previstos, existentes)\n(A3 · mesmo origemId)
-  UC -> LRepo : salvarTodos(novos)
+  Fab --> UC : expected
+  UC -> LRepo : ofMonth(following.monthYear)
+  LRepo --> UC : existing
+  UC -> UC : withoutDuplicates(expected, existing)\n(A3 · mesmo originId)
+  UC -> LRepo : saveAll(newEntries)
 end
 Tx --> UC : confirma tudo ou desfaz tudo
 deactivate Tx
-UC --> VM : seguinte
+UC --> VM : following
 deactivate UC
-VM --> Tela : estado com a nova competência
+VM --> Tela : uiState com a nova competência
 deactivate VM
 Tela --> U : mostra o mês seguinte
 @enduml

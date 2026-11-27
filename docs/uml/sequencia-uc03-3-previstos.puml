@@ -5,26 +5,26 @@ hide <<foco>> stereotype
 autonumber "<b>0"
 title UC03 – Fechar o mês · Parte 3/3: gerar os previstos do mês seguinte
 
-participant "FecharMesUseCase" as UC <<foco>>
-participant "FabricaDeLancamentos" as Fab
-participant "ContaFixa" as CF
-participant "ReceitaRecorrente" as RR
-participant "ContaInvestimento" as CI
+participant "CloseMonthUseCase" as UC <<foco>>
+participant "EntryFactory" as Fab
+participant "RecurringBill" as CF
+participant "RecurringIncome" as RR
+participant "InvestmentAccount" as CI
 
-UC -> Fab : previstosDoMes(mes, contas,\nreceitas, investimentos)
+UC -> Fab : expectedForMonth(month, bills,\nincomes, investments)
 activate Fab
 loop cada conta fixa ativa
-  Fab -> CF : gerarPrevisto(mes)
-  CF --> Fab : gasto PREVISTO no vencimento\n(dia inexistente = último dia) [RN06]
+  Fab -> CF : generateExpected(month)
+  CF --> Fab : gasto EXPECTED no vencimento\n(dia inexistente = último dia) [RN06]
 end
 loop cada receita recorrente
-  Fab -> RR : gerarPrevista(mes)
-  RR --> Fab : receita PREVISTA no recebimento [RN07]
+  Fab -> RR : generateExpected(month)
+  RR --> Fab : receita EXPECTED no recebimento [RN07]
 end
 loop cada corretora com aporte planejado
-  Fab -> CI : gerarAportePrevisto(mes)
-  CI --> Fab : aporte PREVISTO [RN11]
+  Fab -> CI : generateExpectedContribution(month)
+  CI --> Fab : aporte EXPECTED [RN11]
 end
-Fab --> UC : previstos (cada um com origemId)
+Fab --> UC : expected (cada um com originId)
 deactivate Fab
 @enduml

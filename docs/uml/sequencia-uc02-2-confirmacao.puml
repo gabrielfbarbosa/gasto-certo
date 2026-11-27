@@ -6,32 +6,32 @@ autonumber "<b>0"
 title UC02 – Registrar compra parcelada · Parte 2/2: confirmação
 
 actor "Usuário" as U
-boundary "RegistrarGastoScreen" as Tela
-participant "RegistrarGastoViewModel" as VM <<viewmodel>>
-participant "RegistrarCompra\nParceladaUseCase" as UC <<foco>>
-participant "competencia :\nCompetencia" as Comp
-participant "CompetenciaRepository" as CRepo <<repositório>>
-participant "LancamentoRepository" as LRepo <<repositório>>
+boundary "RegisterExpenseScreen" as Tela
+participant "RegisterExpenseViewModel" as VM <<viewmodel>>
+participant "RegisterInstallment\nPurchaseUseCase" as UC <<foco>>
+participant "month :\nAccountingMonth" as Comp
+participant "AccountingMonth\nRepository" as CRepo <<repositório>>
+participant "EntryRepository" as LRepo <<repositório>>
 
 U -> Tela : confirma
-Tela -> VM : confirmar()
+Tela -> VM : confirm()
 activate VM
-VM -> UC : executar(dados)
+VM -> UC : execute(input)
 activate UC
 ref over UC : repete a Parte 1:\nvalidar, criar a compra\ne gerar as parcelas
-UC -> CRepo : buscarOuCriar(mes1)
-CRepo --> UC : competencia
-UC -> Comp : garantirAberta()
+UC -> CRepo : findOrCreate(month1)
+CRepo --> UC : month
+UC -> Comp : ensureOpen()
 alt competência fechada [RN08]
-  Comp --> UC : <<lança>> CompetenciaFechada
-  UC --> VM : CompetenciaFechada
+  Comp --> UC : <<lança>> AccountingMonthClosed
+  UC --> VM : AccountingMonthClosed
   VM --> Tela : evento "Mês fechado. Reabrir?"
   Tela --> U : reabrir ou cancelar
 else competência aberta
-  UC -> LRepo : salvarTodos(parcelas)
-  UC --> VM : compra
+  UC -> LRepo : saveAll(installments)
+  UC --> VM : purchase
   deactivate UC
-  VM --> Tela : estado com a fatura atualizada\n+ evento "compra registrada"
+  VM --> Tela : uiState com a fatura atualizada\n+ evento "compra registrada"
   deactivate VM
   Tela --> U : compra registrada
 end

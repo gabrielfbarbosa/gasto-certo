@@ -6,24 +6,24 @@ autonumber "<b>0"
 title UC03 – Fechar o mês · Parte 1/3: resumo antes de fechar
 
 actor "Usuário" as U
-boundary "FecharMesScreen" as Tela
-participant "FecharMesViewModel" as VM <<viewmodel>>
-participant "ConsultarResumoUseCase" as CR
-participant "LancamentoRepository" as LRepo <<repositório>>
-participant "ResumoDoPeriodo" as Res
+boundary "CloseMonthScreen" as Tela
+participant "CloseMonthViewModel" as VM <<viewmodel>>
+participant "GetSummaryUseCase" as CR
+participant "EntryRepository" as LRepo <<repositório>>
+participant "PeriodSummary" as Res
 
 U -> Tela : abre "Fechar mês"
-Tela -> VM : carregar(mes)
+Tela -> VM : load(month)
 activate VM
-VM -> CR : doMes(mes, titular = null)
+VM -> CR : ofMonth(month, holder = null)
 activate CR
-CR -> LRepo : doMes(mes)
-LRepo --> CR : lancamentos
-CR -> Res : de(lancamentos, null)
-Res --> CR : resumo
-CR --> VM : resumo: receitas, gasto total,\nterceiros, sobra [RN04]
+CR -> LRepo : ofMonth(month)
+LRepo --> CR : entries
+CR -> Res : of(entries, null)
+Res --> CR : summary
+CR --> VM : summary: income, totalExpenses,\nthirdPartyExpenses, surplus() [RN04]
 deactivate CR
-VM --> Tela : estado com o resumo e os\nprevistos não conferidos
+VM --> Tela : uiState com o resumo e os\nprevistos não conferidos
 deactivate VM
 Tela --> U : mostra o resumo
 opt há previstos não conferidos (A1)

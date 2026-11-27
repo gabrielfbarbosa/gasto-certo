@@ -5,77 +5,95 @@ hide empty members
 hide <<ref>> members
 hide <<ref>> stereotype
 hide <<foco>> stereotype
-title GastoCerto — Design (vista 3): regras, Strategy e Factory (domain.regra)
+title GastoCerto — Design (vista 3): regras, Strategy e Factory (domain.rule)
 
 package "Strategy — competência do gasto [RN01]" {
-  interface PoliticaDeCompetencia <<Strategy>> {
-    + competenciaDe(data : LocalDate) : MesAno
+  interface AccountingMonthPolicy <<Strategy>> {
+    + accountingMonthOf(date : LocalDate) : MonthYear
   }
-  class CompetenciaPorFechamentoDeFatura {
-    - diaFechamento : Int
-    - diaVencimento : Int
-    + competenciaDe(data) : MesAno
+  class StatementClosingPolicy {
+    - closingDay : Int
+    - dueDay : Int
+    + accountingMonthOf(date) : MonthYear
   }
-  class CompetenciaPorDataDoGasto {
-    + competenciaDe(data) : MesAno
+  class ExpenseDatePolicy {
+    + accountingMonthOf(date) : MonthYear
   }
 }
 package "Factory — criação de lançamentos" {
-  class FabricaDeLancamentos <<Factory>> {
-    + gasto(dados : DadosDoGasto) : Gasto
-    + compraParcelada(dados : DadosDaCompra) : CompraParcelada
-    + previstosDoMes(mes, contasFixas, receitas, investimentos) : List<Lancamento>
+  class EntryFactory <<Factory>> {
+    + expense(input : ExpenseInput) : Expense
+    + installmentPurchase(input : PurchaseInput) : InstallmentPurchase
+    + expectedForMonth(month, recurringBills, recurringIncomes, investments) : List<Entry>
   }
-  class DadosDoGasto <<value>> {
-    meio, valor, data, descricao,
-    terceiro?, valorEmMoeda?, cotacao?
+  class ExpenseInput <<value>> {
+    paymentMethod, amount, date, description,
+    thirdParty?, foreignAmount?, exchangeRate?
   }
-  class DadosDaCompra <<value>> {
-    cartao, valorTotal, quantidade,
-    dataCompra, descricao, terceiro?
+  class PurchaseInput <<value>> {
+    card, totalAmount, installmentCount,
+    purchaseDate, description, thirdParty?
   }
 }
 package "Exceções de regra" {
-  abstract class RegraVioladaException {
-    + regra : String
-    + mensagem : String
+  abstract class RuleViolationException {
+    + rule : String
+    + message : String
   }
-  class ValorInvalido <<RN09>>
-  class CotacaoInvalida <<RN05>>
-  class ParcelasForaDoLimite <<RN02>>
-  class CompetenciaFechada <<RN08>>
-  class ReembolsoMaiorQueSaldo <<RN03>>
-  class MeioComLancamentos <<RN09>>
-  class DiaInvalido <<RN09>>
-  class TitularInvalido <<RN10>>
+  class InvalidAmount <<RN09>> {
+    + amount : Money
+  }
+  class InvalidExchangeRate <<RN05>> {
+    + exchangeRate : Long
+  }
+  class InstallmentsOutOfRange <<RN02>> {
+    + installmentCount : Int
+  }
+  class AccountingMonthClosed <<RN08>> {
+    + month : MonthYear
+  }
+  class ReimbursementExceedsBalance <<RN03>> {
+    + amount : Money
+    + balance : Money
+  }
+  class PaymentMethodHasEntries <<RN09>> {
+    + name : String
+  }
+  class InvalidDay <<RN09>> {
+    + kind : CLOSING | DUE | PAY
+    + day : Int
+  }
+  class InvalidHolder <<RN10>> {
+    + name : String
+  }
 }
-class "CartaoDeCredito" as Cartao <<ref>>
-class "ContaCorrente · CarteiraMoedaEstrangeira\n· ContaInvestimento" as Outros <<ref>>
+class "CreditCard" as Cartao <<ref>>
+class "CheckingAccount · ForeignCurrencyWallet\n· InvestmentAccount" as Outros <<ref>>
 
-PoliticaDeCompetencia <|.. CompetenciaPorFechamentoDeFatura
-PoliticaDeCompetencia <|.. CompetenciaPorDataDoGasto
-Cartao ..> CompetenciaPorFechamentoDeFatura : cria
-Outros ..> CompetenciaPorDataDoGasto : cria
-FabricaDeLancamentos ..> DadosDoGasto
-FabricaDeLancamentos ..> DadosDaCompra
-FabricaDeLancamentos ..> PoliticaDeCompetencia : usa
-FabricaDeLancamentos ..> RegraVioladaException : lança
-RegraVioladaException <|-- ValorInvalido
-RegraVioladaException <|-- CotacaoInvalida
-RegraVioladaException <|-- ParcelasForaDoLimite
-RegraVioladaException <|-- CompetenciaFechada
-RegraVioladaException <|-- ReembolsoMaiorQueSaldo
-RegraVioladaException <|-- MeioComLancamentos
-RegraVioladaException <|-- DiaInvalido
-RegraVioladaException <|-- TitularInvalido
+AccountingMonthPolicy <|.. StatementClosingPolicy
+AccountingMonthPolicy <|.. ExpenseDatePolicy
+Cartao ..> StatementClosingPolicy : cria
+Outros ..> ExpenseDatePolicy : cria
+EntryFactory ..> ExpenseInput
+EntryFactory ..> PurchaseInput
+EntryFactory ..> AccountingMonthPolicy : usa
+EntryFactory ..> RuleViolationException : lança
+RuleViolationException <|-- InvalidAmount
+RuleViolationException <|-- InvalidExchangeRate
+RuleViolationException <|-- InstallmentsOutOfRange
+RuleViolationException <|-- AccountingMonthClosed
+RuleViolationException <|-- ReimbursementExceedsBalance
+RuleViolationException <|-- PaymentMethodHasEntries
+RuleViolationException <|-- InvalidDay
+RuleViolationException <|-- InvalidHolder
 
-note bottom of CompetenciaPorFechamentoDeFatura
+note bottom of StatementClosingPolicy
   Cartão: até o fechamento entra no ciclo atual;
   competência = mês do vencimento.
   Novo tipo de meio = nova política,
   sem mexer nos casos de uso.
 end note
-note right of FabricaDeLancamentos
+note right of EntryFactory
   Centraliza as variações de criação (simples, moeda
   estrangeira, terceiro, parcelado, previstos do mês)
   e as validações comuns [RN02, RN05, RN06, RN07, RN09, RN11]

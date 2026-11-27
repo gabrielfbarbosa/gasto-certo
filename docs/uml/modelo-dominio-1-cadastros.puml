@@ -8,60 +8,60 @@ hide <<ref>> members
 hide <<ref>> stereotype
 hide <<foco>> stereotype
 
-class Pessoa {
-  nome
-  papel : USUARIO | TITULAR | TERCEIRO
+class Person {
+  name
+  role : USER | HOLDER | THIRD_PARTY
 }
-class Instituicao {
-  nome
+class Institution {
+  name
 }
-abstract class MeioDePagamento {
-  nome
-  ativo : Boolean
+abstract class PaymentMethod {
+  name
+  active : Boolean
 }
-class CartaoDeCredito {
-  diaFechamento : 1..31
-  diaVencimento : 1..31
+class CreditCard {
+  closingDay : 1..31
+  dueDay : 1..31
 }
-class ContaCorrente <<débito / Pix>>
-class CarteiraMoedaEstrangeira {
-  moeda
+class CheckingAccount <<débito / Pix>>
+class ForeignCurrencyWallet {
+  currency
 }
-class ContaInvestimento <<corretora>> {
-  aportePlanejadoMensal : Dinheiro [0..1]
+class InvestmentAccount <<corretora>> {
+  plannedMonthlyContribution : Money [0..1]
 }
-class ContaFixa {
-  descricao
-  valorPrevisto : Dinheiro
-  diaVencimento : 1..31
+class RecurringBill {
+  description
+  expectedAmount : Money
+  dueDay : 1..31
 }
-class ReceitaRecorrente {
-  descricao
-  valor : Dinheiro
-  diaRecebimento : 1..31
+class RecurringIncome {
+  description
+  amount : Money
+  payDay : 1..31
 }
 
-Instituicao "1" -- "0..*" MeioDePagamento : emite >
-Pessoa "1" -- "0..*" MeioDePagamento : titular de >
-MeioDePagamento <|-- CartaoDeCredito
-MeioDePagamento <|-- ContaCorrente
-MeioDePagamento <|-- CarteiraMoedaEstrangeira
-MeioDePagamento <|-- ContaInvestimento
-ContaFixa "0..*" -up- "1" MeioDePagamento : debitada em >
+Institution "1" -- "0..*" PaymentMethod : emite >
+Person "1" -- "0..*" PaymentMethod : titular de >
+PaymentMethod <|-- CreditCard
+PaymentMethod <|-- CheckingAccount
+PaymentMethod <|-- ForeignCurrencyWallet
+PaymentMethod <|-- InvestmentAccount
+RecurringBill "0..*" -up- "1" PaymentMethod : debitada em >
 
-note right of Pessoa
+note right of Person
   Todo meio tem um titular; uma instituição
   pode ter cartões de titulares diferentes [RN10]
 end note
-note bottom of ContaFixa
-  Gera um gasto PREVISTO por mês
+note bottom of RecurringBill
+  Gera um gasto EXPECTED por mês
   no dia de vencimento [RN06]
 end note
-note bottom of ReceitaRecorrente
-  Salário: receita PREVISTA no
+note bottom of RecurringIncome
+  Salário: receita EXPECTED no
   dia de recebimento [RN07]
 end note
-note bottom of CartaoDeCredito
+note bottom of CreditCard
   Meio com lançamentos não é excluído,
   só desativado [RN09]
 end note
