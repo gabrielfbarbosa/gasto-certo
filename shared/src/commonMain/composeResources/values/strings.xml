@@ -28,4 +28,15 @@
     <string name="demo_app_subscription">App subscription</string>
     <string name="demo_television">Television</string>
     <string name="demo_notebook">Notebook</string>
+    <!-- App shell and common UI (8.19) -->
+    <string name="action_ok">OK</string>
+    <string name="action_cancel">Cancel</string>
+    <string name="month_previous">Previous month</string>
+    <string name="month_next">Next month</string>
+    <string name="tab_summary">Summary</string>
+    <string name="tab_register">Add</string>
+    <string name="tab_close_month">Close month</string>
+    <string name="tab_more">More</string>
+    <string name="coming_soon">coming soon</string>
+    <string name="demo_data_loaded">Demo data loaded.</string>
 </resources>

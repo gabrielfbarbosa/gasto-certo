@@ -14,7 +14,9 @@ import br.com.gabriel.gastocerto.usecase.RegisterOneOffIncomeUseCase
 import br.com.gabriel.gastocerto.usecase.RegisterReimbursementUseCase
 import br.com.gabriel.gastocerto.usecase.ReopenMonthUseCase
 import br.com.gabriel.gastocerto.usecase.SeedDemoDataUseCase
+import br.com.gabriel.gastocerto.ui.app.AppViewModel
 import org.koin.core.module.dsl.factoryOf
+import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
 
 /**
@@ -38,4 +40,7 @@ val appModule = module {
     factoryOf(::CorrectEntryUseCase)
     factoryOf(::RegisterReimbursementUseCase)
     factory { SeedDemoDataUseCase(get(), get(), get(), get(), get(), get(), get()) }
+
+    // ViewModels (MVVM + UDF). Constructors with defaults are explicit.
+    viewModel { AppViewModel(get()) }
 }

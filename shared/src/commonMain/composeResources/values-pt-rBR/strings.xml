@@ -28,4 +28,15 @@
     <string name="demo_app_subscription">Assinatura de app</string>
     <string name="demo_television">Televisão</string>
     <string name="demo_notebook">Notebook</string>
+    <!-- Estrutura do app e UI comum (8.19) -->
+    <string name="action_ok">OK</string>
+    <string name="action_cancel">Cancelar</string>
+    <string name="month_previous">Mês anterior</string>
+    <string name="month_next">Próximo mês</string>
+    <string name="tab_summary">Resumo</string>
+    <string name="tab_register">Lançar</string>
+    <string name="tab_close_month">Fechar mês</string>
+    <string name="tab_more">Mais</string>
+    <string name="coming_soon">em breve</string>
+    <string name="demo_data_loaded">Dados de demonstração carregados.</string>
 </resources>

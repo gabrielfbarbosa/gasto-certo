@@ -49,11 +49,3 @@ private fun DayKind.label() = when (this) {
     DayKind.DUE -> Res.string.day_kind_due
     DayKind.PAY -> Res.string.day_kind_pay
 }
-
-/** Brazilian real format (`R$ 1.234,56`): the currency is always BRL, whatever the language. */
-internal fun Money.toBrl(): String {
-    val absolute = if (cents < 0) -cents else cents
-    val reais = (absolute / 100).toString().reversed().chunked(3).joinToString(".").reversed()
-    val sign = if (cents < 0) "-" else ""
-    return "${sign}R$ $reais,${(absolute % 100).toString().padStart(2, '0')}"
-}
