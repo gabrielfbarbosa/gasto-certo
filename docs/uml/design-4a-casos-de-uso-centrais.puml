@@ -44,7 +44,7 @@ package "usecase" {
     - withoutDuplicates(expected, existing) : List<Entry>
   }
   class ReopenMonthUseCase <<Controller>> {
-    + execute(month : MonthYear)
+    + execute(month : MonthYear) : AccountingMonth
   }
   class GetSummaryUseCase <<Controller>> {
     + ofMonth(month : MonthYear, holder : Person?) : PeriodSummary
