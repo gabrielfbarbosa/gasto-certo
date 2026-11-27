@@ -15,6 +15,7 @@ import br.com.gabriel.gastocerto.usecase.RegisterReimbursementUseCase
 import br.com.gabriel.gastocerto.usecase.ReopenMonthUseCase
 import br.com.gabriel.gastocerto.usecase.SeedDemoDataUseCase
 import br.com.gabriel.gastocerto.ui.app.AppViewModel
+import br.com.gabriel.gastocerto.ui.closemonth.CloseMonthViewModel
 import br.com.gabriel.gastocerto.ui.expense.RegisterExpenseViewModel
 import br.com.gabriel.gastocerto.ui.summary.SummaryViewModel
 import org.koin.core.module.dsl.factoryOf
@@ -47,4 +48,5 @@ val appModule = module {
     viewModel { AppViewModel(get()) }
     viewModel { RegisterExpenseViewModel(get(), get(), get(), get()) }
     viewModel { SummaryViewModel(get(), get(), get(), get()) }
+    viewModel { CloseMonthViewModel(get(), get(), get(), get()) }
 }

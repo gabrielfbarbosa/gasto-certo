@@ -76,4 +76,18 @@
     <string name="summary_receivables">A receber</string>
     <string name="summary_statements">Faturas dos cartões</string>
     <string name="summary_statement_due">Fecha %1$s · vence %2$s</string>
+    <!-- Fechar mês (8.22) -->
+    <string name="close_month_title">Fechar mês</string>
+    <string name="close_month_open">Aberto</string>
+    <string name="close_month_closed">Fechado</string>
+    <string name="close_month_expected">Previstos a conferir</string>
+    <string name="close_month_no_expected">Nenhum previsto pendente.</string>
+    <string name="close_month_check">Conferir</string>
+    <string name="close_month_real_amount">Valor real</string>
+    <string name="close_month_action">Fechar %1$s</string>
+    <string name="close_month_confirm_text">O mês deixa de aceitar lançamentos e o próximo abre com as contas fixas, o salário e os aportes. Previstos não conferidos: %1$s.</string>
+    <string name="close_month_reopen">Reabrir mês</string>
+    <string name="close_month_done">%1$s fechado. %2$s aberto com %3$s previstos.</string>
+    <string name="close_month_reopened">%1$s reaberto para correções.</string>
+    <string name="close_month_confirmed">"%1$s" conferido.</string>
 </resources>

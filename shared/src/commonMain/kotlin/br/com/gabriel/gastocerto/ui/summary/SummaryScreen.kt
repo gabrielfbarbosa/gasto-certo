@@ -32,7 +32,9 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import br.com.gabriel.gastocerto.domain.model.Installment
 import br.com.gabriel.gastocerto.domain.model.Money
 import br.com.gabriel.gastocerto.domain.model.Statement
+import br.com.gabriel.gastocerto.ui.components.AmountRow
 import br.com.gabriel.gastocerto.ui.components.ScreenColumn
+import br.com.gabriel.gastocerto.ui.components.Section
 import br.com.gabriel.gastocerto.ui.theme.amountColor
 import br.com.gabriel.gastocerto.ui.toBrl
 import br.com.gabriel.gastocerto.ui.toDisplay
@@ -145,24 +147,6 @@ private fun Period.label(): String = when (this) {
     is Period.Month -> month.toDisplay()
     is Period.Week -> "${monday.toDisplay()} – ${sunday.toDisplay()}"
     is Period.Year -> year.toString()
-}
-
-@Composable
-private fun Section(title: String, content: @Composable () -> Unit) {
-    Card(Modifier.fillMaxWidth()) {
-        Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
-            Text(title, style = MaterialTheme.typography.titleMedium)
-            content()
-        }
-    }
-}
-
-@Composable
-private fun AmountRow(label: String, amount: Money, modifier: Modifier = Modifier) {
-    Row(modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-        Text(label, style = MaterialTheme.typography.bodyMedium, modifier = Modifier.weight(1f))
-        Text(amount.toBrl(), style = MaterialTheme.typography.bodyMedium)
-    }
 }
 
 /** A statement line; tapping it shows its expenses (UC05, installments labeled `k/N`). */

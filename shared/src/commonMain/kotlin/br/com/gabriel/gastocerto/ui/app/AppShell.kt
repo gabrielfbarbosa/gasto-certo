@@ -29,6 +29,7 @@ import androidx.navigation3.ui.NavDisplay
 import androidx.savedstate.serialization.SavedStateConfiguration
 import br.com.gabriel.gastocerto.ui.components.LocalSnackbarHost
 import br.com.gabriel.gastocerto.ui.components.PlaceholderScreen
+import br.com.gabriel.gastocerto.ui.closemonth.CloseMonthScreen
 import br.com.gabriel.gastocerto.ui.expense.RegisterExpenseScreen
 import br.com.gabriel.gastocerto.ui.summary.SummaryScreen
 import br.com.gabriel.gastocerto.ui.navigation.Route
@@ -91,7 +92,7 @@ fun AppShell(viewModel: AppViewModel = koinViewModel()) {
                     entryProvider = entryProvider {
                         entry<Route.Summary> { SummaryScreen() }
                         entry<Route.RegisterExpense> { RegisterExpenseScreen() }
-                        entry<Route.CloseMonth> { PlaceholderScreen(stringResource(Res.string.tab_close_month)) }
+                        entry<Route.CloseMonth> { CloseMonthScreen() }
                         entry<Route.More> { PlaceholderScreen(stringResource(Res.string.tab_more)) }
                     },
                 )

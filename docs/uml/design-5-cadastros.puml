@@ -37,6 +37,7 @@ package "usecase" {
     + execute(amount : Money, date : LocalDate, description : String) : Income
   }
   class CorrectEntryUseCase <<Controller>> {
+    + entriesOf(month : MonthYear) : List<Entry>
     + edit(entry : Entry)
     + delete(entry : Entry)
     + confirmExpected(entry : Entry, actualAmount : Money) : Entry

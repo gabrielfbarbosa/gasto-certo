@@ -22,6 +22,9 @@ class CloseMonthUseCase(
     private val factory: EntryFactory,
     private val entries: EntryRepository,
 ) {
+    /** The accounting month of [month] with its status (OPEN/CLOSED), for the screen (RN08). */
+    suspend fun accountingMonth(month: MonthYear): AccountingMonth = accountingMonths.findOrCreate(month)
+
     /**
      * Closes [month] (RN08 – closing a closed month throws `AccountingMonthClosed`), opens the
      * following month and saves its expected entries from recurring bills (RN06), recurring incomes

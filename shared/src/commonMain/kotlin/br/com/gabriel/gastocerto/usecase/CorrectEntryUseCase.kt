@@ -14,6 +14,9 @@ class CorrectEntryUseCase(
     private val entries: EntryRepository,
     private val accountingMonths: AccountingMonthRepository,
 ) {
+    /** The entries of the accounting [month] (RN01), to pick one to correct or confirm. */
+    suspend fun entriesOf(month: MonthYear): List<Entry> = entries.ofMonth(month)
+
     /** Saves the edited [entry] (same `id`). Throws `AccountingMonthClosed` if either month is closed. */
     suspend fun edit(entry: Entry) {
         entries.findById(entry.id)?.let { ensureOpen(it.accountingMonth) }

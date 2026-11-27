@@ -76,4 +76,18 @@
     <string name="summary_receivables">To receive</string>
     <string name="summary_statements">Card statements</string>
     <string name="summary_statement_due">Closes %1$s · due %2$s</string>
+    <!-- Close month (8.22) -->
+    <string name="close_month_title">Close month</string>
+    <string name="close_month_open">Open</string>
+    <string name="close_month_closed">Closed</string>
+    <string name="close_month_expected">Expected entries to check</string>
+    <string name="close_month_no_expected">No expected entries left to check.</string>
+    <string name="close_month_check">Check</string>
+    <string name="close_month_real_amount">Real amount</string>
+    <string name="close_month_action">Close %1$s</string>
+    <string name="close_month_confirm_text">The month will no longer accept entries and the next one opens with its recurring bills, salary and contributions. Expected entries not checked: %1$s.</string>
+    <string name="close_month_reopen">Reopen month</string>
+    <string name="close_month_done">%1$s closed. %2$s opened with %3$s expected entries.</string>
+    <string name="close_month_reopened">%1$s reopened for corrections.</string>
+    <string name="close_month_confirmed">"%1$s" checked.</string>
 </resources>

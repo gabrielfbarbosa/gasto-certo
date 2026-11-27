@@ -25,6 +25,7 @@ package "ui" {
     + load(month : MonthYear)
     + close()
     + reopen()
+    + confirmExpected(entry : Entry, actualAmount : Long?)
   }
   class SummaryViewModel {
     + uiState : StateFlow<SummaryUiState>
@@ -35,6 +36,7 @@ package "ui" {
 }
 package "usecase" {
   class RegisterReimbursementUseCase <<ref>>
+  class CorrectEntryUseCase <<ref>>
   class RegisterExpenseUseCase <<Controller>> {
     + execute(input : ExpenseInput) : Expense
   }
@@ -43,6 +45,7 @@ package "usecase" {
     + execute(input : PurchaseInput) : InstallmentPurchase
   }
   class CloseMonthUseCase <<foco>> {
+    + accountingMonth(month : MonthYear) : AccountingMonth
     + execute(month : MonthYear) : AccountingMonth
     - withoutDuplicates(expected, existing) : List<Entry>
   }
@@ -68,6 +71,7 @@ RegisterExpenseViewModel --> ReopenMonthUseCase
 CloseMonthViewModel --> GetSummaryUseCase
 CloseMonthViewModel --> CloseMonthUseCase
 CloseMonthViewModel --> ReopenMonthUseCase
+CloseMonthViewModel --> CorrectEntryUseCase : conferir previstos
 SummaryViewModel --> GetSummaryUseCase
 SummaryViewModel --> GetStatementUseCase
 SummaryViewModel --> RegisterReimbursementUseCase : saldo a receber
