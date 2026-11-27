@@ -5,6 +5,8 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Icon
@@ -24,8 +26,10 @@ import org.jetbrains.compose.resources.stringResource
 /** Standard screen body: title (with a back arrow when [onBack] is given) and a scrolling column. */
 @Composable
 fun ScreenColumn(title: String, modifier: Modifier = Modifier, onBack: (() -> Unit)? = null, content: @Composable () -> Unit) {
+    // On wide windows (Web, tablets) the content keeps a readable width, centered.
     Column(
-        modifier = modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(16.dp),
+        modifier = modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(16.dp)
+            .wrapContentWidth(Alignment.CenterHorizontally).widthIn(max = 720.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
