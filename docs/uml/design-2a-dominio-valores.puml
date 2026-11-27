@@ -20,6 +20,7 @@ class MesAno <<value>> {
   + ano : Int
   + mes : Int
   + proximo() : MesAno
+  + anterior() : MesAno
   + dia(dia : Int) : LocalDate
 }
 class Competencia <<foco>> {
@@ -41,7 +42,7 @@ class ResumoDoPeriodo <<value>> {
 class SaldoAReceber <<value>> {
   + terceiro : Pessoa
   + valor : Dinheiro
-  + {static} de(gastos, reembolsos) : SaldoAReceber
+  + {static} de(terceiro, gastos, reembolsos) : SaldoAReceber
   + validarReembolso(valor : Dinheiro)
 }
 class Fatura <<value>> {

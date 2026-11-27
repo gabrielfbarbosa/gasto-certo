@@ -18,6 +18,9 @@ data class MesAno(val ano: Int, val mes: Int) {
     /** O mês seguinte (dezembro vira janeiro do ano seguinte). */
     fun proximo(): MesAno = if (mes == 12) MesAno(ano + 1, 1) else MesAno(ano, mes + 1)
 
+    /** O mês anterior (janeiro vira dezembro do ano anterior). Usado na data de fechamento da fatura. */
+    fun anterior(): MesAno = if (mes == 1) MesAno(ano - 1, 12) else MesAno(ano, mes - 1)
+
     /**
      * A data deste mês no [dia] informado. **Dia inexistente no mês vira o último dia do mês**
      * (ex.: dia 31 em fevereiro de 2027 → 28/02/2027), regra usada pelas contas fixas (RN06),

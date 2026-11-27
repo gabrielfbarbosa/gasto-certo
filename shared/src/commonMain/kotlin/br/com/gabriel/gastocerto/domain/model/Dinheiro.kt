@@ -61,3 +61,6 @@ value class Dinheiro(val centavos: Long) {
         const val ESCALA_DA_COTACAO: Long = 10_000
     }
 }
+
+/** Soma uma lista de valores (lista vazia = zero). Uso interno do domínio. */
+internal fun Iterable<Dinheiro>.somar(): Dinheiro = fold(Dinheiro(0)) { total, valor -> total + valor }

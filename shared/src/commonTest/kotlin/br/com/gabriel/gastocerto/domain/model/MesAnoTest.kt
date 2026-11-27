@@ -18,6 +18,12 @@ class MesAnoTest {
     }
 
     @Test
+    fun `anterior volta um mes e de janeiro vai para dezembro do ano anterior`() {
+        assertEquals(MesAno(2026, 10), MesAno(2026, 11).anterior())
+        assertEquals(MesAno(2026, 12), MesAno(2027, 1).anterior())
+    }
+
+    @Test
     fun `mes fora de 1 a 12 e rejeitado`() {
         assertFailsWith<IllegalArgumentException> { MesAno(2026, 0) }
         assertFailsWith<IllegalArgumentException> { MesAno(2026, 13) }
