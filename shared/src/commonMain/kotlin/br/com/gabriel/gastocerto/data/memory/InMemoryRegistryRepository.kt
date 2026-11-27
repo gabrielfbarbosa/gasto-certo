@@ -27,6 +27,10 @@ class InMemoryRegistryRepository(private val database: InMemoryDatabase) : Regis
         database.paymentMethods = database.paymentMethods + (paymentMethod.id to paymentMethod.copy())
     }
 
+    override suspend fun deletePaymentMethod(paymentMethod: PaymentMethod) {
+        database.paymentMethods = database.paymentMethods - paymentMethod.id
+    }
+
     override suspend fun hasEntries(paymentMethod: PaymentMethod): Boolean =
         database.entries.values.any { it is Expense && it.paymentMethod == paymentMethod }
 }

@@ -21,6 +21,8 @@ class InMemoryEntryRepository(private val database: InMemoryDatabase) : EntryRep
         database.entries = database.entries - entry.id
     }
 
+    override suspend fun findById(id: String): Entry? = database.entries[id]?.copy()
+
     override suspend fun ofMonth(month: MonthYear): List<Entry> =
         read { it.accountingMonth == month }
 

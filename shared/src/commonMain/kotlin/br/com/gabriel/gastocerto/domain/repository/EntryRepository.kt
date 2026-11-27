@@ -16,6 +16,9 @@ interface EntryRepository {
     suspend fun saveAll(entries: List<Entry>)
     suspend fun delete(entry: Entry)
 
+    /** The stored entry with this [id], or `null` (used to check the original month when editing – RN08). */
+    suspend fun findById(id: String): Entry?
+
     /** Entries whose accounting month is [month] (RN01). */
     suspend fun ofMonth(month: MonthYear): List<Entry>
 

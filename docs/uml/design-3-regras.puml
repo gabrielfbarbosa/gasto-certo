@@ -24,6 +24,7 @@ package "Factory — criação de lançamentos" {
   class EntryFactory <<Factory>> {
     + expense(input : ExpenseInput) : Expense
     + installmentPurchase(input : PurchaseInput) : InstallmentPurchase
+    + income(amount, date, description, type) : Income
     + expectedForMonth(month, recurringBills, recurringIncomes, investments) : List<Entry>
   }
   class ExpenseInput <<value>> {
@@ -95,7 +96,7 @@ note bottom of StatementClosingPolicy
 end note
 note right of EntryFactory
   Centraliza as variações de criação (simples, moeda
-  estrangeira, terceiro, parcelado, previstos do mês)
+  estrangeira, terceiro, parcelado, receita, previstos do mês)
   e as validações comuns [RN02, RN05, RN06, RN07, RN09, RN11]
 end note
 @enduml

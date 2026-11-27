@@ -5,6 +5,8 @@ import br.com.gabriel.gastocerto.domain.model.CurrencyConversion
 import br.com.gabriel.gastocerto.domain.model.Entry
 import br.com.gabriel.gastocerto.domain.model.Expense
 import br.com.gabriel.gastocerto.domain.model.ForeignCurrencyWallet
+import br.com.gabriel.gastocerto.domain.model.Income
+import br.com.gabriel.gastocerto.domain.model.IncomeType
 import br.com.gabriel.gastocerto.domain.model.InstallmentPurchase
 import br.com.gabriel.gastocerto.domain.model.InvestmentAccount
 import br.com.gabriel.gastocerto.domain.model.Money
@@ -14,6 +16,7 @@ import br.com.gabriel.gastocerto.domain.model.Person
 import br.com.gabriel.gastocerto.domain.model.RecurringBill
 import br.com.gabriel.gastocerto.domain.model.RecurringIncome
 import kotlinx.datetime.LocalDate
+import kotlinx.datetime.number
 
 /**
  * Data entered to register a single expense (UC01).
@@ -69,6 +72,15 @@ class EntryFactory {
             thirdParty = input.thirdParty,
             conversion = conversion,
         )
+    }
+
+    /**
+     * UC08 / UC10 – ACTUAL one-off income or investment sale (RN07, RN11), in the accounting month of
+     * its [date] (income has no statement). RN09: amount > 0 (`InvalidAmount`).
+     */
+    fun income(amount: Money, date: LocalDate, description: String, type: IncomeType): Income {
+        if (!amount.isPositive()) throw InvalidAmount(amount)
+        return Income(amount, date, description, MonthYear(date.year, date.month.number), type)
     }
 
     /**

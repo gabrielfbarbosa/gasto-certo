@@ -105,6 +105,16 @@ abstract class RepositoriesContract {
     }
 
     @Test
+    fun `findById returns a copy of the stored entry or null`() = runTest {
+        val r = newRepositories()
+        val stored = expense(1_000, LocalDate(2026, 11, 10))
+        r.entries.save(stored)
+
+        assertEquals<Entry?>(stored, r.entries.findById(stored.id))
+        assertEquals(null, r.entries.findById("missing"))
+    }
+
+    @Test
     fun `changing a read entry does not change the database without saving`() = runTest {
         val r = newRepositories()
         r.entries.save(Expense(Money(20_000), LocalDate(2026, 11, 15), "Power", november, inter, status = EntryStatus.EXPECTED))
@@ -175,6 +185,16 @@ abstract class RepositoriesContract {
         assertEquals(listOf(nubankInst), r.registry.institutions())
         assertEquals(listOf<Any>(nubank), r.registry.activePaymentMethods())
         inter.active = true
+    }
+
+    @Test
+    fun `deletePaymentMethod removes it from the active list`() = runTest {
+        val r = newRepositories()
+        r.registry.savePaymentMethod(nubank)
+
+        r.registry.deletePaymentMethod(nubank)
+
+        assertTrue(r.registry.activePaymentMethods().isEmpty())
     }
 
     @Test

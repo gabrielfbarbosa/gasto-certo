@@ -7,6 +7,7 @@ import br.com.gabriel.gastocerto.domain.model.EntryStatus
 import br.com.gabriel.gastocerto.domain.model.Expense
 import br.com.gabriel.gastocerto.domain.model.ForeignCurrencyWallet
 import br.com.gabriel.gastocerto.domain.model.Income
+import br.com.gabriel.gastocerto.domain.model.IncomeType
 import br.com.gabriel.gastocerto.domain.model.Institution
 import br.com.gabriel.gastocerto.domain.model.InvestmentAccount
 import br.com.gabriel.gastocerto.domain.model.Money
@@ -101,6 +102,23 @@ class EntryFactoryTest {
     @Test
     fun `RN11 - contribution with zero amount is rejected`() {
         assertFailsWith<InvalidAmount> { factory.expense(ExpenseInput(clear, Money(0), LocalDate(2026, 11, 20), "Contribution")) }
+    }
+
+    // ---------- income (UC08, UC10) ----------
+
+    @Test
+    fun `RN07 - one-off income goes into the month of the date received`() {
+        val income = factory.income(Money(120_000), LocalDate(2026, 11, 28), "Freelance", IncomeType.ONE_OFF)
+
+        assertEquals(november, income.accountingMonth)
+        assertEquals(IncomeType.ONE_OFF, income.type)
+        assertEquals(EntryStatus.ACTUAL, income.status)
+    }
+
+    @Test
+    fun `RN09 and RN11 - income or investment sale with zero amount is rejected`() {
+        assertFailsWith<InvalidAmount> { factory.income(Money(0), LocalDate(2026, 11, 28), "x", IncomeType.ONE_OFF) }
+        assertFailsWith<InvalidAmount> { factory.income(Money(-1), LocalDate(2026, 11, 28), "x", IncomeType.INVESTMENT_SALE) }
     }
 
     // ---------- installment purchase (UC02) ----------

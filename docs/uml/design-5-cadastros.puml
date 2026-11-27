@@ -20,26 +20,27 @@ package "usecase" {
     + saveInstitution(institution : Institution)
     + savePaymentMethod(paymentMethod : PaymentMethod)
     + deactivatePaymentMethod(paymentMethod : PaymentMethod)
+    + deletePaymentMethod(paymentMethod : PaymentMethod)
   }
   class ManageRecurrencesUseCase <<Controller>> {
     + saveRecurringBill(bill : RecurringBill)
     + saveRecurringIncome(income : RecurringIncome)
   }
   class ManageInvestmentsUseCase <<Controller>> {
-    + setPlannedContribution(account : InvestmentAccount, amount : Money)
-    + registerSale(account : InvestmentAccount, amount : Money, date : LocalDate)
+    + setPlannedContribution(account : InvestmentAccount, amount : Money?) : InvestmentAccount
+    + registerSale(account : InvestmentAccount, amount : Money, date : LocalDate) : Income
   }
   class RegisterOneOffIncomeUseCase <<Controller>> {
-    + execute(amount : Money, date : LocalDate, description : String)
+    + execute(amount : Money, date : LocalDate, description : String) : Income
   }
   class CorrectEntryUseCase <<Controller>> {
     + edit(entry : Entry)
     + delete(entry : Entry)
-    + confirmExpected(entry : Entry, actualAmount : Money)
+    + confirmExpected(entry : Entry, actualAmount : Money) : Entry
   }
   class RegisterReimbursementUseCase <<Controller>> {
     + receivableBalance(thirdParty : Person) : ReceivableBalance
-    + execute(thirdParty : Person, amount : Money, date : LocalDate)
+    + execute(thirdParty : Person, amount : Money, date : LocalDate) : Reimbursement
   }
 }
 package "domain (vistas 3 e 4b)" {
@@ -63,6 +64,10 @@ ManageRecurrencesUseCase --> EntryFactory
 ManageRecurrencesUseCase --> EntryRepository
 ManageInvestmentsUseCase --> RegistryRepository
 ManageInvestmentsUseCase --> EntryRepository
+ManageInvestmentsUseCase --> EntryFactory
+ManageInvestmentsUseCase --> AccountingMonthRepository
+ManageRecurrencesUseCase --> AccountingMonthRepository
+RegisterOneOffIncomeUseCase --> EntryFactory
 RegisterOneOffIncomeUseCase --> EntryRepository
 RegisterOneOffIncomeUseCase --> AccountingMonthRepository
 CorrectEntryUseCase --> EntryRepository
@@ -73,8 +78,8 @@ RegisterReimbursementUseCase --> ReimbursementRepository
 legend right
   ManageRecurrencesUseCase usa a Factory para gerar o
   previsto do mês aberto ao cadastrar uma conta fixa [RN06].
-  ManageRegistryUseCase desativa, mas não exclui,
-  meio com lançamentos [RN09]. CorrectEntryUseCase
+  ManageRegistryUseCase só exclui meio sem lançamentos;
+  com lançamentos, só desativa [RN09]. CorrectEntryUseCase
   respeita mês fechado [RN08]. Reembolso ≤ saldo [RN03].
 endlegend
 @enduml

@@ -13,6 +13,7 @@ package "domain.repository" {
     + save(entry : Entry)
     + saveAll(entries : List<Entry>)
     + delete(entry : Entry)
+    + findById(id : String) : Entry?
     + ofMonth(month : MonthYear) : List<Entry>
     + ofPeriod(start : LocalDate, end : LocalDate) : List<Entry>
     + ofThirdParty(thirdParty : Person) : List<Expense>
@@ -28,6 +29,7 @@ package "domain.repository" {
     + savePerson(person : Person)
     + saveInstitution(institution : Institution)
     + savePaymentMethod(paymentMethod : PaymentMethod)
+    + deletePaymentMethod(paymentMethod : PaymentMethod)
     + hasEntries(paymentMethod : PaymentMethod) : Boolean
   }
   interface RecurrenceRepository {
