@@ -15,6 +15,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import org.jetbrains.compose.resources.painterResource
+import br.com.gabriel.gastocerto.di.appModule
+import br.com.gabriel.gastocerto.di.platformModule
+import org.koin.compose.KoinApplication
+import org.koin.dsl.koinConfiguration
 
 import gastocerto.shared.generated.resources.Res
 import gastocerto.shared.generated.resources.compose_multiplatform
@@ -22,6 +26,14 @@ import gastocerto.shared.generated.resources.compose_multiplatform
 @Composable
 @Preview
 fun App() {
+    // Koin starts with the composition (Android Context injected automatically) and stops with it.
+    KoinApplication(configuration = koinConfiguration { modules(appModule, platformModule) }) {
+        AppContent()
+    }
+}
+
+@Composable
+private fun AppContent() {
     MaterialTheme {
         var showContent by remember { mutableStateOf(false) }
         Column(

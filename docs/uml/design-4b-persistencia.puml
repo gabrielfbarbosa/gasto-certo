@@ -60,15 +60,19 @@ package "data.memory (commonMain)" {
 }
 package "di (Koin)" {
   class appModule
-  class platformModule
+  class "platformModule (expect/actual)" as platformModule
+  class "roomDataModule()" as roomModule
+  class inMemoryDataModule
 }
 class "*UseCase" as UseCases <<ref>>
 
 UseCases .down.> EntryRepository : usa
 UseCases .down.> Transaction : usa
 appModule .down.> UseCases : factory
-platformModule .down.> RoomRepos : single (Android/iOS)
-platformModule .down.> MemRepos : single (Web)
+platformModule .down.> roomModule : Android/iOS
+platformModule .down.> inMemoryDataModule : Web
+roomModule .down.> RoomRepos : single
+inMemoryDataModule .down.> MemRepos : single
 RoomRepos .up.|> EntryRepository : implementa (as 5)
 RoomTransaction .up.|> Transaction
 MemRepos .up.|> EntryRepository : implementa (as 5)
