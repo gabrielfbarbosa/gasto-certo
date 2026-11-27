@@ -102,12 +102,13 @@ class InvestmentAccount(
     /**
      * RN11 – EXPECTED contribution for [month] (an expense in this brokerage) on day 1, with `originId` = [id] (D3).
      * Returns `null` when there is no planned contribution. The amount is adjusted on confirmation.
+     * The description is the brokerage name (data, not UI text); the screen adds "Planned contribution" in the user's language.
      */
     fun generateExpectedContribution(month: MonthYear): Expense? = plannedMonthlyContribution?.let { amount ->
         Expense(
             amount = amount,
             date = month.atDay(1),
-            description = "Planned contribution – $name",
+            description = name,
             accountingMonth = month,
             paymentMethod = this,
             status = EntryStatus.EXPECTED,

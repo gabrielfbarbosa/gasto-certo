@@ -90,6 +90,10 @@ interface RecurrenceDao {
     @Upsert
     suspend fun upsertIncome(income: RecurringIncomeEntity)
 
+    /** Active or not: the foreign key holds either way. */
+    @Query("SELECT EXISTS(SELECT 1 FROM recurring_bill WHERE paymentMethodId = :paymentMethodId)")
+    suspend fun existsBillFor(paymentMethodId: String): Boolean
+
     @Query("SELECT * FROM recurring_bill WHERE active = 1 ORDER BY dueDay, rowid")
     suspend fun activeBills(): List<RecurringBillEntity>
 

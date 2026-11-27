@@ -229,6 +229,15 @@ abstract class RepositoriesContract {
         assertFalse(r.registry.hasEntries(nubank))
     }
 
+    @Test
+    fun `RN09 - a recurring bill paying with the method also blocks deleting it`() = runTest {
+        val r = newRepositories()
+        r.givenRegistry()
+        r.recurrences.saveRecurringBill(RecurringBill("Internet", Money(10_000), 10, nubank, active = false))
+
+        assertTrue(r.registry.hasEntries(nubank))
+    }
+
     // ---------- RecurrenceRepository ----------
 
     @Test

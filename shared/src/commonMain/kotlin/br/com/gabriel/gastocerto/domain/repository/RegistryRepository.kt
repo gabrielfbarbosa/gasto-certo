@@ -16,6 +16,9 @@ interface RegistryRepository {
     /** Removes a payment method. Callers check [hasEntries] first (RN09). */
     suspend fun deletePaymentMethod(paymentMethod: PaymentMethod)
 
-    /** RN09 – a payment method with entries cannot be deleted, only deactivated. */
+    /**
+     * RN09 – a payment method with entries cannot be deleted, only deactivated. Recurring bills that pay
+     * with it count too: they point to it (and in Room a foreign key would reject the deletion).
+     */
     suspend fun hasEntries(paymentMethod: PaymentMethod): Boolean
 }

@@ -61,7 +61,7 @@ suspend fun Repositories.assertDemoData() {
     val november = MonthYear(2026, 11)
     assertEquals(AccountingMonthStatus.CLOSED, accountingMonths.findOrCreate(november.previous()).status)
     val expected = entries.ofMonth(november).filter { it.status == EntryStatus.EXPECTED }
-    assertEquals(setOf("Salary", "Power", "Water", "Internet", "Planned contribution – Clear"), expected.map { it.description }.toSet())
+    assertEquals(setOf("Salary", "Power", "Water", "Internet", "Clear"), expected.map { it.description }.toSet())
     // RN02: TV in 6 installments over the year.
     val year = entries.ofPeriod(LocalDate(2026, 1, 1), LocalDate(2027, 12, 31))
     assertEquals(6, year.filterIsInstance<Installment>().count { it.description == "TV" })

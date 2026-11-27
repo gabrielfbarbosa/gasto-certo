@@ -32,5 +32,6 @@ class InMemoryRegistryRepository(private val database: InMemoryDatabase) : Regis
     }
 
     override suspend fun hasEntries(paymentMethod: PaymentMethod): Boolean =
-        database.entries.values.any { it is Expense && it.paymentMethod == paymentMethod }
+        database.entries.values.any { it is Expense && it.paymentMethod == paymentMethod } ||
+            database.recurringBills.values.any { it.paymentMethod == paymentMethod }
 }

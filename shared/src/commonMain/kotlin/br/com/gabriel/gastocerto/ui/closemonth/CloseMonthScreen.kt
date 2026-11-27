@@ -30,6 +30,7 @@ import br.com.gabriel.gastocerto.ui.components.MonthSelector
 import br.com.gabriel.gastocerto.ui.components.ScreenColumn
 import br.com.gabriel.gastocerto.ui.components.Section
 import br.com.gabriel.gastocerto.ui.toBrl
+import br.com.gabriel.gastocerto.ui.title
 import br.com.gabriel.gastocerto.ui.toDisplay
 import gastocerto.shared.generated.resources.Res
 import gastocerto.shared.generated.resources.close_month_action
@@ -96,7 +97,7 @@ fun CloseMonthScreen(viewModel: CloseMonthViewModel = koinViewModel()) {
             state.expected.forEach { entry ->
                 Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
                     Column(Modifier.weight(1f)) {
-                        AmountRow(entry.description, entry.amount)
+                        AmountRow(entry.title(), entry.amount)
                         val where = (entry as? Expense)?.paymentMethod?.name?.let { " · $it" } ?: ""
                         Text(entry.date.toDisplay() + where, style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant)
@@ -130,7 +131,7 @@ fun CloseMonthScreen(viewModel: CloseMonthViewModel = koinViewModel()) {
     }
     checking?.let { entry ->
         AmountDialog(
-            title = entry.description,
+            title = entry.title(),
             label = stringResource(Res.string.close_month_real_amount),
             initial = entry.amount.cents,
             onConfirm = { amount -> checking = null; viewModel.confirmExpected(entry, amount) },

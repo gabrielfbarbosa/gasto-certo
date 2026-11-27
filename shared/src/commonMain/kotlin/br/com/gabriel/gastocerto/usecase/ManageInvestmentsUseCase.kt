@@ -30,9 +30,12 @@ class ManageInvestmentsUseCase(
         return updated
     }
 
-    /** RN11 – an investment sale is income on the date received; RN08 – its month must be open. */
+    /**
+     * RN11 – an investment sale is income on the date received; RN08 – its month must be open.
+     * The description is the brokerage name (data); the screen shows it as "Investment sale – <name>" in the user's language.
+     */
     suspend fun registerSale(account: InvestmentAccount, amount: Money, date: LocalDate): Income {
-        val sale = factory.income(amount, date, "Investment sale – ${account.name}", IncomeType.INVESTMENT_SALE)
+        val sale = factory.income(amount, date, account.name, IncomeType.INVESTMENT_SALE)
         accountingMonths.findOrCreate(sale.accountingMonth).ensureOpen()
         entries.save(sale)
         return sale

@@ -22,7 +22,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import br.com.gabriel.gastocerto.domain.model.Entry
 import br.com.gabriel.gastocerto.domain.model.EntryStatus
 import br.com.gabriel.gastocerto.domain.model.Expense
-import br.com.gabriel.gastocerto.domain.model.Installment
 import br.com.gabriel.gastocerto.ui.components.AmountDialog
 import br.com.gabriel.gastocerto.ui.components.AmountField
 import br.com.gabriel.gastocerto.ui.components.AmountRow
@@ -33,6 +32,7 @@ import br.com.gabriel.gastocerto.ui.components.MonthSelector
 import br.com.gabriel.gastocerto.ui.components.ScreenColumn
 import br.com.gabriel.gastocerto.ui.components.Section
 import br.com.gabriel.gastocerto.ui.components.TextInput
+import br.com.gabriel.gastocerto.ui.title
 import br.com.gabriel.gastocerto.ui.toDisplay
 import gastocerto.shared.generated.resources.Res
 import gastocerto.shared.generated.resources.action_cancel
@@ -91,7 +91,7 @@ fun EntriesScreen(onBack: () -> Unit, viewModel: EntriesViewModel = koinViewMode
             if (state.entries.isEmpty()) Text(stringResource(Res.string.entries_empty))
             state.entries.forEach { entry ->
                 Column(Modifier.fillMaxWidth().clickable { selected = entry }.padding(vertical = 4.dp)) {
-                    val label = (entry as? Installment)?.let { "${entry.description} ${it.label()}" } ?: entry.description
+                    val label = entry.title()
                     AmountRow(if (entry is Expense) label else "+ $label", entry.amount)
                     val where = (entry as? Expense)?.paymentMethod?.name?.let { " · $it" } ?: ""
                     val expected = if (entry.status == EntryStatus.EXPECTED) " · " + stringResource(Res.string.entries_expected) else ""
@@ -114,7 +114,7 @@ fun EntriesScreen(onBack: () -> Unit, viewModel: EntriesViewModel = koinViewMode
     }
     checking?.let { entry ->
         AmountDialog(
-            title = entry.description,
+            title = entry.title(),
             label = stringResource(Res.string.close_month_real_amount),
             initial = entry.amount.cents,
             onConfirm = { amount -> checking = null; viewModel.confirmExpected(entry, amount) },

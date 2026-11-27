@@ -161,4 +161,6 @@
     <string name="reimbursement_third_party">Third party</string>
     <string name="reimbursement_register">Register reimbursement</string>
     <string name="reimbursement_saved">Reimbursement from %1$s saved. Still owes %2$s.</string>
+    <string name="entry_contribution_title">Planned contribution – %1$s</string>
+    <string name="entry_sale_title">Investment sale – %1$s</string>
 </resources>

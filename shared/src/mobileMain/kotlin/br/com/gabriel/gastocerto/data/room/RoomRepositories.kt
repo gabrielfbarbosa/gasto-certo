@@ -83,7 +83,8 @@ class RoomRegistryRepository(private val database: AppDatabase) : RegistryReposi
         database.paymentMethodDao().delete(paymentMethod.id)
 
     override suspend fun hasEntries(paymentMethod: PaymentMethod): Boolean =
-        database.entryDao().existsForPaymentMethod(paymentMethod.id)
+        database.entryDao().existsForPaymentMethod(paymentMethod.id) ||
+            database.recurrenceDao().existsBillFor(paymentMethod.id)
 }
 
 class RoomRecurrenceRepository(private val database: AppDatabase) : RecurrenceRepository {
