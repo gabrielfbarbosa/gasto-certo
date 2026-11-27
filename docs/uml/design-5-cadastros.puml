@@ -16,6 +16,9 @@ package "ui" {
 }
 package "usecase" {
   class ManageRegistryUseCase <<Controller>> {
+    + people() : List<Person>
+    + institutions() : List<Institution>
+    + activePaymentMethods() : List<PaymentMethod>
     + savePerson(person : Person)
     + saveInstitution(institution : Institution)
     + savePaymentMethod(paymentMethod : PaymentMethod)

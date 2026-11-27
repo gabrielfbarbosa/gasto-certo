@@ -13,6 +13,14 @@ import br.com.gabriel.gastocerto.domain.rule.PaymentMethodHasEntries
  */
 class ManageRegistryUseCase(private val registry: RegistryRepository) {
 
+    /** Registered people, by name (screens pick holders and third parties from here). */
+    suspend fun people(): List<Person> = registry.people()
+
+    suspend fun institutions(): List<Institution> = registry.institutions()
+
+    /** Payment methods that accept new entries (RN09: deactivated ones are hidden). */
+    suspend fun activePaymentMethods(): List<PaymentMethod> = registry.activePaymentMethods()
+
     suspend fun savePerson(person: Person) = registry.savePerson(person)
 
     suspend fun saveInstitution(institution: Institution) = registry.saveInstitution(institution)

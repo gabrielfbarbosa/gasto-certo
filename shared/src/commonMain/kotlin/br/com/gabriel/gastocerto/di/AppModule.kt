@@ -15,6 +15,7 @@ import br.com.gabriel.gastocerto.usecase.RegisterReimbursementUseCase
 import br.com.gabriel.gastocerto.usecase.ReopenMonthUseCase
 import br.com.gabriel.gastocerto.usecase.SeedDemoDataUseCase
 import br.com.gabriel.gastocerto.ui.app.AppViewModel
+import br.com.gabriel.gastocerto.ui.expense.RegisterExpenseViewModel
 import org.koin.core.module.dsl.factoryOf
 import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
@@ -43,4 +44,5 @@ val appModule = module {
 
     // ViewModels (MVVM + UDF). Constructors with defaults are explicit.
     viewModel { AppViewModel(get()) }
+    viewModel { RegisterExpenseViewModel(get(), get(), get(), get()) }
 }

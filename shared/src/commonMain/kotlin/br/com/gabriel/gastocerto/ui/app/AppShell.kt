@@ -12,6 +12,7 @@ import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -26,7 +27,9 @@ import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
 import androidx.savedstate.serialization.SavedStateConfiguration
+import br.com.gabriel.gastocerto.ui.components.LocalSnackbarHost
 import br.com.gabriel.gastocerto.ui.components.PlaceholderScreen
+import br.com.gabriel.gastocerto.ui.expense.RegisterExpenseScreen
 import br.com.gabriel.gastocerto.ui.navigation.Route
 import br.com.gabriel.gastocerto.ui.navigation.tabs
 import gastocerto.shared.generated.resources.Res
@@ -76,7 +79,7 @@ fun AppShell(viewModel: AppViewModel = koinViewModel()) {
         Box(Modifier.padding(padding).fillMaxSize()) {
             if (!state.ready) {
                 CircularProgressIndicator(Modifier.align(Alignment.Center))
-            } else {
+            } else CompositionLocalProvider(LocalSnackbarHost provides snackbar) {
                 NavDisplay(
                     backStack = backStack,
                     onBack = { backStack.removeLastOrNull() },
@@ -86,7 +89,7 @@ fun AppShell(viewModel: AppViewModel = koinViewModel()) {
                     ),
                     entryProvider = entryProvider {
                         entry<Route.Summary> { PlaceholderScreen(stringResource(Res.string.tab_summary)) }
-                        entry<Route.RegisterExpense> { PlaceholderScreen(stringResource(Res.string.tab_register)) }
+                        entry<Route.RegisterExpense> { RegisterExpenseScreen() }
                         entry<Route.CloseMonth> { PlaceholderScreen(stringResource(Res.string.tab_close_month)) }
                         entry<Route.More> { PlaceholderScreen(stringResource(Res.string.tab_more)) }
                     },

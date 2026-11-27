@@ -39,4 +39,26 @@
     <string name="tab_more">More</string>
     <string name="coming_soon">coming soon</string>
     <string name="demo_data_loaded">Demo data loaded.</string>
+    <!-- Register expense (8.20) -->
+    <string name="expense_title">New expense</string>
+    <string name="expense_payment_method">Payment method</string>
+    <string name="expense_amount">Amount</string>
+    <string name="expense_total_amount">Total amount</string>
+    <string name="expense_foreign_amount">Amount in the currency</string>
+    <string name="expense_exchange_rate">Exchange rate</string>
+    <string name="expense_converted">In reais: %1$s</string>
+    <string name="expense_date">Date</string>
+    <string name="expense_description">Description</string>
+    <string name="expense_third_party">On behalf of (third party)</string>
+    <string name="expense_no_third_party">Nobody (my expense)</string>
+    <string name="expense_installments">Installments (1 = single payment)</string>
+    <string name="expense_preview">Preview installments</string>
+    <string name="expense_installment_line">%1$s – %2$s – statement %3$s</string>
+    <string name="expense_confirm">Save expense</string>
+    <string name="expense_saved">Expense saved in %1$s.</string>
+    <string name="purchase_saved">%1$s installments saved, the first in %2$s.</string>
+    <string name="expense_reopen_title">Month closed</string>
+    <string name="expense_reopen_text">%1$s is closed. Reopen it and save this expense?</string>
+    <string name="expense_reopen_confirm">Reopen and save</string>
+    <string name="expense_no_payment_methods">Register a payment method first (More › Registry).</string>
 </resources>

@@ -39,4 +39,26 @@
     <string name="tab_more">Mais</string>
     <string name="coming_soon">em breve</string>
     <string name="demo_data_loaded">Dados de demonstração carregados.</string>
+    <!-- Lançar gasto (8.20) -->
+    <string name="expense_title">Novo gasto</string>
+    <string name="expense_payment_method">Meio de pagamento</string>
+    <string name="expense_amount">Valor</string>
+    <string name="expense_total_amount">Valor total</string>
+    <string name="expense_foreign_amount">Valor na moeda</string>
+    <string name="expense_exchange_rate">Cotação</string>
+    <string name="expense_converted">Em reais: %1$s</string>
+    <string name="expense_date">Data</string>
+    <string name="expense_description">Descrição</string>
+    <string name="expense_third_party">Em nome de (terceiro)</string>
+    <string name="expense_no_third_party">Ninguém (gasto meu)</string>
+    <string name="expense_installments">Parcelas (1 = à vista)</string>
+    <string name="expense_preview">Ver parcelas</string>
+    <string name="expense_installment_line">%1$s – %2$s – fatura %3$s</string>
+    <string name="expense_confirm">Lançar gasto</string>
+    <string name="expense_saved">Gasto lançado em %1$s.</string>
+    <string name="purchase_saved">%1$s parcelas lançadas, a 1ª em %2$s.</string>
+    <string name="expense_reopen_title">Mês fechado</string>
+    <string name="expense_reopen_text">%1$s está fechado. Reabrir e lançar este gasto?</string>
+    <string name="expense_reopen_confirm">Reabrir e lançar</string>
+    <string name="expense_no_payment_methods">Cadastre um meio de pagamento primeiro (Mais › Cadastros).</string>
 </resources>

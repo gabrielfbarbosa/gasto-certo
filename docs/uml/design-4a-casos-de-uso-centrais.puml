@@ -17,6 +17,7 @@ package "ui" {
     + events : Flow<RegisterExpenseEvent>
     + previewInstallments()
     + confirm()
+    + reopenAndConfirm(month : MonthYear)
   }
   class CloseMonthViewModel {
     + uiState : StateFlow<CloseMonthUiState>
@@ -61,6 +62,7 @@ CloseMonthScreen --> CloseMonthViewModel
 SummaryScreen --> SummaryViewModel
 RegisterExpenseViewModel --> RegisterExpenseUseCase
 RegisterExpenseViewModel --> RegisterInstallmentPurchaseUseCase
+RegisterExpenseViewModel --> ReopenMonthUseCase
 CloseMonthViewModel --> GetSummaryUseCase
 CloseMonthViewModel --> CloseMonthUseCase
 CloseMonthViewModel --> ReopenMonthUseCase
@@ -73,6 +75,8 @@ legend right
   navegar, oferecer reabrir). Ações = métodos do ViewModel.
   <b>Controller (GRASP)</b>: cada *UseCase coordena um caso de uso
   e delega as regras ao domínio. CloseMonthUseCase em destaque.
-  Métodos dos use cases são suspend [D4].
+  Métodos dos use cases são suspend [D4]. O RegisterExpenseViewModel
+  lista meios e terceiros pelo ManageRegistryUseCase (vista 5) e, se o
+  mês estiver fechado [RN08], oferece reabrir (reopenAndConfirm).
 endlegend
 @enduml

@@ -135,11 +135,12 @@ fun <T> SelectField(
     optionLabel: @Composable (T) -> String,
     onSelect: (T) -> Unit,
     modifier: Modifier = Modifier,
+    placeholder: String = "",
 ) {
     var expanded by remember { mutableStateOf(false) }
-    ExposedDropdownMenuBox(expanded = expanded, onExpandedChange = { expanded = it }, modifier = modifier) {
+    ExposedDropdownMenuBox(expanded = expanded, onExpandedChange = { expanded = it }, modifier = modifier.fillMaxWidth()) {
         OutlinedTextField(
-            value = selected?.let { optionLabel(it) } ?: "",
+            value = selected?.let { optionLabel(it) } ?: placeholder,
             onValueChange = {}, readOnly = true, label = { Text(label) }, singleLine = true,
             trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded) },
             modifier = Modifier.menuAnchor(ExposedDropdownMenuAnchorType.PrimaryNotEditable).fillMaxWidth(),
