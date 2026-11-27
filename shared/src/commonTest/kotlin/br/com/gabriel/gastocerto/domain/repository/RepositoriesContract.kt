@@ -41,9 +41,12 @@ class Repositories(
 )
 
 /**
- * Contract every repository implementation meets (in memory now, Room in 8.16):
+ * Contract every repository implementation meets (in memory and Room):
  * saving with the same id replaces, queries filter correctly, what is read is a copy
  * and the [Transaction] undoes everything when the block fails.
+ *
+ * Records something points to (holder, institution, payment method, third party) are saved
+ * first ([givenRegistry]): Room's foreign keys reject dangling references.
  */
 abstract class RepositoriesContract {
 
@@ -54,9 +57,20 @@ abstract class RepositoriesContract {
     private val father = Person("Father", Role.THIRD_PARTY)
     private val nubankInst = Institution("Nubank")
     private val nubank = CreditCard("Nubank", gabriel, nubankInst, closingDay = 5, dueDay = 12)
-    private val inter = CheckingAccount("Inter", gabriel, Institution("Inter"))
+    private val interInst = Institution("Inter")
+    private val inter = CheckingAccount("Inter", gabriel, interInst)
     private val november = MonthYear(2026, 11)
     private val december = MonthYear(2026, 12)
+
+    /** Saves the people, institutions and payment methods the tests point to. */
+    private suspend fun Repositories.givenRegistry() {
+        registry.savePerson(gabriel)
+        registry.savePerson(father)
+        registry.saveInstitution(nubankInst)
+        registry.saveInstitution(interInst)
+        registry.savePaymentMethod(nubank)
+        registry.savePaymentMethod(inter)
+    }
 
     private fun expense(amount: Long, date: LocalDate, month: MonthYear = november, thirdParty: Person? = null) =
         Expense(Money(amount), date, "expense", month, inter, thirdParty)
@@ -66,6 +80,7 @@ abstract class RepositoriesContract {
     @Test
     fun `entries of the month filter by accounting month`() = runTest {
         val r = newRepositories()
+        r.givenRegistry()
         val inNovember = expense(1_000, LocalDate(2026, 11, 30))
         val inDecember = expense(2_000, LocalDate(2026, 11, 30), month = december)
         r.entries.saveAll(listOf(inNovember, inDecember))
@@ -77,6 +92,7 @@ abstract class RepositoriesContract {
     @Test
     fun `entries of the period filter by date with both ends included`() = runTest {
         val r = newRepositories()
+        r.givenRegistry()
         val monday = expense(1, LocalDate(2026, 11, 23))
         val sunday = expense(2, LocalDate(2026, 11, 29))
         val after = expense(3, LocalDate(2026, 11, 30))
@@ -91,6 +107,7 @@ abstract class RepositoriesContract {
     @Test
     fun `saving with the same id replaces and delete removes`() = runTest {
         val r = newRepositories()
+        r.givenRegistry()
         val expected = Expense(Money(20_000), LocalDate(2026, 11, 15), "Power", november, inter, status = EntryStatus.EXPECTED)
         r.entries.save(expected)
 
@@ -107,6 +124,7 @@ abstract class RepositoriesContract {
     @Test
     fun `findById returns a copy of the stored entry or null`() = runTest {
         val r = newRepositories()
+        r.givenRegistry()
         val stored = expense(1_000, LocalDate(2026, 11, 10))
         r.entries.save(stored)
 
@@ -117,6 +135,7 @@ abstract class RepositoriesContract {
     @Test
     fun `changing a read entry does not change the database without saving`() = runTest {
         val r = newRepositories()
+        r.givenRegistry()
         r.entries.save(Expense(Money(20_000), LocalDate(2026, 11, 15), "Power", november, inter, status = EntryStatus.EXPECTED))
 
         r.entries.ofMonth(november).single().confirm(Money(1))
@@ -127,6 +146,7 @@ abstract class RepositoriesContract {
     @Test
     fun `installments incomes and conversion come back with every field`() = runTest {
         val r = newRepositories()
+        r.givenRegistry()
         val installments = InstallmentPurchase(Money(10_000), 2, LocalDate(2026, 11, 3), "TV", nubank, father).generateInstallments()
         val salary = Income(Money(800_000), LocalDate(2026, 11, 5), "Salary", november, IncomeType.SALARY,
             EntryStatus.EXPECTED, originId = "rec-1")
@@ -148,6 +168,7 @@ abstract class RepositoriesContract {
     @Test
     fun `third-party expenses bring only the expenses on their behalf`() = runTest {
         val r = newRepositories()
+        r.givenRegistry()
         val fathers = expense(5_000, LocalDate(2026, 11, 10), thirdParty = father)
         r.entries.saveAll(listOf(fathers, expense(7_000, LocalDate(2026, 11, 11))))
 
@@ -175,6 +196,7 @@ abstract class RepositoriesContract {
         val r = newRepositories()
         r.registry.savePerson(gabriel)
         r.registry.saveInstitution(nubankInst)
+        r.registry.saveInstitution(interInst)
         r.registry.savePaymentMethod(nubank)
         r.registry.savePaymentMethod(inter)
 
@@ -182,7 +204,7 @@ abstract class RepositoriesContract {
         r.registry.savePaymentMethod(inter)
 
         assertEquals(listOf(gabriel), r.registry.people())
-        assertEquals(listOf(nubankInst), r.registry.institutions())
+        assertEquals(listOf(interInst, nubankInst), r.registry.institutions())
         assertEquals(listOf<Any>(nubank), r.registry.activePaymentMethods())
         inter.active = true
     }
@@ -190,18 +212,17 @@ abstract class RepositoriesContract {
     @Test
     fun `deletePaymentMethod removes it from the active list`() = runTest {
         val r = newRepositories()
-        r.registry.savePaymentMethod(nubank)
+        r.givenRegistry()
 
         r.registry.deletePaymentMethod(nubank)
 
-        assertTrue(r.registry.activePaymentMethods().isEmpty())
+        assertEquals(listOf<Any>(inter), r.registry.activePaymentMethods())
     }
 
     @Test
     fun `RN09 - hasEntries tells whether the payment method has expenses`() = runTest {
         val r = newRepositories()
-        r.registry.savePaymentMethod(inter)
-        r.registry.savePaymentMethod(nubank)
+        r.givenRegistry()
         r.entries.save(expense(1_000, LocalDate(2026, 11, 10)))
 
         assertTrue(r.registry.hasEntries(inter))
@@ -213,11 +234,16 @@ abstract class RepositoriesContract {
     @Test
     fun `active recurrences and brokerages with a planned contribution`() = runTest {
         val r = newRepositories()
+        r.givenRegistry()
         val power = RecurringBill("Power", Money(20_000), 15, inter)
         val internet = RecurringBill("Internet", Money(10_000), 10, inter, active = false)
         val salary = RecurringIncome("Salary", Money(800_000), 5)
-        val clear = InvestmentAccount("Clear", gabriel, Institution("Clear"), Money(50_000))
-        val binance = InvestmentAccount("Binance", gabriel, Institution("Binance"))
+        val clearInst = Institution("Clear")
+        val binanceInst = Institution("Binance")
+        val clear = InvestmentAccount("Clear", gabriel, clearInst, Money(50_000))
+        val binance = InvestmentAccount("Binance", gabriel, binanceInst)
+        r.registry.saveInstitution(clearInst)
+        r.registry.saveInstitution(binanceInst)
         r.recurrences.saveRecurringBill(power)
         r.recurrences.saveRecurringBill(internet)
         r.recurrences.saveRecurringIncome(salary)
@@ -234,9 +260,12 @@ abstract class RepositoriesContract {
     @Test
     fun `reimbursements are listed by third party`() = runTest {
         val r = newRepositories()
+        r.givenRegistry()
         val fathers = Reimbursement(father, Money(5_000), LocalDate(2026, 11, 20))
         r.reimbursements.save(fathers)
-        r.reimbursements.save(Reimbursement(Person("Mother-in-law", Role.THIRD_PARTY), Money(1_000), LocalDate(2026, 11, 21)))
+        val motherInLaw = Person("Mother-in-law", Role.THIRD_PARTY)
+        r.registry.savePerson(motherInLaw)
+        r.reimbursements.save(Reimbursement(motherInLaw, Money(1_000), LocalDate(2026, 11, 21)))
 
         assertEquals(listOf(fathers), r.reimbursements.ofThirdParty(father))
     }
@@ -246,6 +275,7 @@ abstract class RepositoriesContract {
     @Test
     fun `the transaction saves everything when the block finishes`() = runTest {
         val r = newRepositories()
+        r.givenRegistry()
         val result = r.transaction.execute {
             r.entries.save(expense(1_000, LocalDate(2026, 11, 10)))
             r.accountingMonths.save(AccountingMonth(november, AccountingMonthStatus.CLOSED))
@@ -260,6 +290,7 @@ abstract class RepositoriesContract {
     @Test
     fun `the transaction undoes everything when the block fails midway`() = runTest {
         val r = newRepositories()
+        r.givenRegistry()
         r.entries.save(expense(1_000, LocalDate(2026, 11, 1)))
 
         assertFailsWith<IllegalStateException> {

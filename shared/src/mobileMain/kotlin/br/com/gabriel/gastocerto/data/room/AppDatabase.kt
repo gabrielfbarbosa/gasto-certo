@@ -12,10 +12,22 @@ import kotlinx.coroutines.IO
  * Room database shared by Android and iOS (mobileMain). Room does not run on the Web,
  * which keeps the in-memory repositories (persistence is replaceable).
  */
-@Database(entities = [PersonEntity::class], version = 1)
+@Database(
+    entities = [
+        PersonEntity::class, InstitutionEntity::class, PaymentMethodEntity::class, EntryEntity::class,
+        AccountingMonthEntity::class, RecurringBillEntity::class, RecurringIncomeEntity::class, ReimbursementEntity::class,
+    ],
+    version = 1,
+)
 @ConstructedBy(AppDatabaseConstructor::class)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun personDao(): PersonDao
+    abstract fun institutionDao(): InstitutionDao
+    abstract fun paymentMethodDao(): PaymentMethodDao
+    abstract fun entryDao(): EntryDao
+    abstract fun accountingMonthDao(): AccountingMonthDao
+    abstract fun recurrenceDao(): RecurrenceDao
+    abstract fun reimbursementDao(): ReimbursementDao
 }
 
 /** The Room compiler (KSP) generates the `actual` implementations for each mobile target. */

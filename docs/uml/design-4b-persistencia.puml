@@ -86,6 +86,8 @@ legend right
   Todos os métodos são suspend; Flow só onde a tela observa [D4].
   RoomTransaction usa useWriterConnection { immediateTransaction { } }:
   tudo ou nada no fechamento do mês (UC03).
+  Room: 8 tabelas com chaves estrangeiras (pessoa, instituição e meio
+  são salvos antes do que aponta para eles); enums gravados pelo nome.
   <b>Low Coupling + Dependency Injection</b>: os use cases conhecem só
   as interfaces; o Koin injeta Room no mobile e memória na Web/testes.
   Room*Repository e InMemory*Repository: uma classe por interface,
