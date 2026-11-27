@@ -137,7 +137,11 @@ abstract class VerificarDominio : DefaultTask() {
 val verificarDominio by tasks.registering(VerificarDominio::class) {
     group = "verification"
     description = "RNF07: verifica que o pacote domain não importa Compose, Room, Koin, Android, iOS nem outras camadas."
-    fontes.from(fileTree("src") { include("*/kotlin/br/com/gabriel/gastocerto/domain/**/*.kt") })
+    // Só o código de produção: os testes do domínio podem usar kotlinx-coroutines-test, kotlin.test etc.
+    fontes.from(fileTree("src") {
+        include("*/kotlin/br/com/gabriel/gastocerto/domain/**/*.kt")
+        exclude("*Test/**")
+    })
     relatorio.set(layout.buildDirectory.file("reports/verificarDominio.txt"))
 }
 

@@ -14,7 +14,7 @@ package "domain.repositorio" {
     + salvarTodos(l : List<Lancamento>)
     + excluir(l : Lancamento)
     + doMes(mes : MesAno) : List<Lancamento>
-    + doPeriodo(inicio, fim) : List<Lancamento>
+    + doPeriodo(inicio : LocalDate, fim : LocalDate) : List<Lancamento>
     + deTerceiro(p : Pessoa) : List<Gasto>
   }
   interface CompetenciaRepository {
@@ -23,6 +23,7 @@ package "domain.repositorio" {
   }
   interface CadastroRepository {
     + pessoas() : List<Pessoa>
+    + instituicoes() : List<Instituicao>
     + meiosAtivos() : List<MeioDePagamento>
     + salvarPessoa(p : Pessoa)
     + salvarInstituicao(i : Instituicao)
@@ -53,6 +54,7 @@ package "data (Room KMP · mobileMain)" {
 package "data.memoria (commonMain)" {
   class "*EmMemoriaRepository (5)" as MemRepos
   class TransacaoEmMemoria
+  class BancoEmMemoria
 }
 package "di (Koin)" {
   class moduloApp
@@ -69,6 +71,8 @@ RoomRepos .up.|> LancamentoRepository : implementa (as 5)
 RoomTransacao .up.|> Transacao
 MemRepos .up.|> LancamentoRepository : implementa (as 5)
 TransacaoEmMemoria .up.|> Transacao
+MemRepos --> BancoEmMemoria
+TransacaoEmMemoria --> BancoEmMemoria : foto e restaura
 RoomRepos --> Daos
 RoomTransacao --> AppDatabase
 AppDatabase --> Daos
