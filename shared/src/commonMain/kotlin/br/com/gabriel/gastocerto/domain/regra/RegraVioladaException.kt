@@ -40,3 +40,11 @@ class ReembolsoMaiorQueSaldo(valor: Dinheiro, saldo: Dinheiro) :
 /** RN09 – meio de pagamento ou instituição com lançamentos não pode ser excluído, só desativado. */
 class MeioComLancamentos(nome: String) :
     RegraVioladaException("RN09", "\"$nome\" tem lançamentos e não pode ser excluído; desative-o")
+
+/** RN09 – dias de fechamento, vencimento e recebimento precisam estar entre 1 e 31. */
+class DiaInvalido(campo: String, dia: Int) :
+    RegraVioladaException("RN09", "o dia de $campo deve estar entre 1 e 31 (informado: $dia)")
+
+/** RN10 – o titular de um meio de pagamento é o usuário ou um titular da família, nunca um terceiro. */
+class TitularInvalido(nome: String) :
+    RegraVioladaException("RN10", "$nome é terceiro reembolsante e não pode ser titular de um meio de pagamento")

@@ -46,6 +46,8 @@ package "Exceções de regra" {
   class CompetenciaFechada <<RN08>>
   class ReembolsoMaiorQueSaldo <<RN03>>
   class MeioComLancamentos <<RN09>>
+  class DiaInvalido <<RN09>>
+  class TitularInvalido <<RN10>>
 }
 class "CartaoDeCredito" as Cartao <<ref>>
 class "ContaCorrente · CarteiraMoedaEstrangeira\n· ContaInvestimento" as Outros <<ref>>
@@ -64,6 +66,8 @@ RegraVioladaException <|-- ParcelasForaDoLimite
 RegraVioladaException <|-- CompetenciaFechada
 RegraVioladaException <|-- ReembolsoMaiorQueSaldo
 RegraVioladaException <|-- MeioComLancamentos
+RegraVioladaException <|-- DiaInvalido
+RegraVioladaException <|-- TitularInvalido
 
 note bottom of CompetenciaPorFechamentoDeFatura
   Cartão: até o fechamento entra no ciclo atual;
